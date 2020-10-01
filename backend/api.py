@@ -36,19 +36,9 @@ def audio_embedding_api():
         # Response
         print("Building Response")
         mime = magic.Magic(mime=True)
-        # m = MultipartEncoder(
-        #     fields={
-        #         'psnr': str(psnr),
-        #         'encryptedFileName': audio.encrypted_file_name,
-        #         'encryptedFileType': mime.from_file(audio.encrypted_file_path),
-        #         'encryptedFile': (audio.encrypted_file_path, open(audio.encrypted_file_path, 'rb'), mime.from_file(audio.encrypted_file_path))
-        #     }
-        # )
         open_file = open(audio.encrypted_file_path, 'rb')
         bytes_json = open_file.read()
         open_file.close()
-        # bytes_array_json = bytearray(bytes_json)
-        # bytes_int = [int(byte) for byte in bytes_array_json]
         response_json = jsonify({
             'psnr': str(psnr),
             'encryptedFileName': audio.encrypted_file_name,

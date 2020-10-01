@@ -273,7 +273,7 @@ def audio_psnr(original_file, embedded_file):
 
 
 if __name__ == "__main__":
-    audio_execute = 'extract'
+    audio_execute = 'embedding'
     if audio_execute == 'embedding':
         data = {'key':'FUSRODAH', 'encrypted':True, 'randomized':True, 'audioType':'stereo', 'containerFileName':'weebs.wav', 'inputFileName':'poke.mp3'}
         audio = Audio(data)
