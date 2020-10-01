@@ -6,6 +6,10 @@ import random
 from cv2 import cv2
 from vigenere import Vigenere
 
+FLAG_TRUE = 22
+FLAG_FALSE = 11
+TOTAL_FLAG_BITS = 24
+
 class AviVideo:
     def __init__(self):
         self.filename = ''
@@ -78,17 +82,19 @@ class AviVideo:
     
 
 class AviStegano():
-    def __init__(self, filename_video, key, encryption=False, randomized=False):
+    def __init__(self, filename_video, key, encryption=False, randomized_frame=False, randomized_pixel=False):
         #Read aviVideo
         self.aviVideo = AviVideo()
         self.aviVideo.readVideo(filename_video)
+        self.initial_frames = self.aviVideo.getFrames()
         self.frames = self.aviVideo.getFrames()
 
         #Set AviStegano Metadata
         self.key = key
         self.seed = sum(ord(k) for k in key)
         self.encryption = encryption
-        self.randomized = randomized
+        self.randomized_frame = randomized_frame
+        self.randomized_pixel = randomized_pixel
         
         self.mask_one = [1, 2, 4, 8, 16, 32, 64, 128]
         self.mask_or = self.mask_one.pop(0)
@@ -98,49 +104,52 @@ class AviStegano():
 
         #Video Data Size
         self.frame_size = len(self.aviVideo.getFrames())
-        self.width_size = self.aviVideo.getWidth()
         self.height_size = self.aviVideo.getHeight()
+        self.width_size = self.aviVideo.getWidth()
         self.channel_size = 3   #RGB
 
         #Pointer Map
         self.frame_map = list(range(self.frame_size))
-        self.height_map = list(range(self.height_size))
-        self.width_map = list(range(self.width_size))
+        self.map = list(range(self.height_size * self.width_size))
 
         self.curr_frame = 0
+        self.curr_pos = 0
         self.curr_channel = 0
-        self.curr_width = 0
-        self.curr_height = 0
+        self.skipped_frame = 0
+
+    def get_index(self, position):
+        height_idx = position // self.width_size
+        width_idx = position % self.width_size
+
+        return height_idx, width_idx
 
     def next_pos(self):
         if (self.curr_channel == (self.channel_size - 1)):
             self.curr_channel = 0
 
-            if (self.curr_width == (self.width_size - 1)):
-                self.curr_width = 0
+            if (self.curr_pos == (len(self.map) - 1)):
+                self.curr_pos = 0
 
-                if (self.curr_height == (self.height_size - 1)):
-                    self.curr_height = 0
+                if (self.curr_frame == (self.frame_size - self.skipped_frame - 1)):
+                    self.curr_frame = self.skipped_frame
 
-                    if (self.curr_frame == (self.frame_size - 1)):
-                        self.curr_frame = 0
-
-                        if (self.mask_or == 128):
-                            raise Exception('No available pixels remaining')
-                        else:
-                            self.mask_or = self.mask_one.pop(0)
-                            self.mask_and = self.mask_zero.pop(0)
+                    if (self.mask_or == 128):
+                        raise Exception('No available pixels remaining')
                     else:
-                        self.curr_frame += 1
+                        self.mask_or = self.mask_one.pop(0)
+                        self.mask_and = self.mask_zero.pop(0)
+
                 else:
-                    self.curr_height += 1
+                    self.curr_frame += 1
             else:
-                self.curr_width += 1
+                self.curr_pos += 1
         else:
             self.curr_channel += 1
 
     def read_bit(self):
-        val = self.frames[self.frame_map[self.curr_frame]][self.height_map[self.curr_height], self.width_map[self.curr_width], self.curr_channel]
+        height_idx, width_idx = self.get_index(self.map[self.curr_pos])
+        
+        val = self.frames[self.frame_map[self.curr_frame]][height_idx, width_idx, self.curr_channel]
         val = int(val) & self.mask_or
 
         self.next_pos()
@@ -160,14 +169,15 @@ class AviStegano():
 
     def put_value(self, bits):
         for b in bits:
-            val = list(self.frames[self.frame_map[self.curr_frame]][self.height_map[self.curr_height], self.width_map[self.curr_width]])
+            height_idx, width_idx = self.get_index(self.map[self.curr_pos])
+            val = list(self.frames[self.frame_map[self.curr_frame]][height_idx, width_idx])
 
             if (int(b) == 1):
                 val[self.curr_channel] = int(val[self.curr_channel]) | self.mask_or
             else:
                 val[self.curr_channel] = int(val[self.curr_channel]) & self.mask_and
 
-            self.frames[self.frame_map[self.curr_frame]][self.height_map[self.curr_height], self.width_map[self.curr_width]] = tuple(val)
+            self.frames[self.frame_map[self.curr_frame]][height_idx, width_idx] = tuple(val)
             self.next_pos()
 
     def embeed(self, message_file_name, output_filename):
@@ -175,32 +185,54 @@ class AviStegano():
         content = open(message_file_name, "rb").read()
         data = len(content)
 
-        if (self.frame_size * self.width_size * self.height_size * self.channel_size) < (filedata + data + 112):
-            raise Exception('Image is smaller than payload')
-
+        #Add Encryption Flag Bits
         if (self.encryption):
+            print('Encrypting Message File')
             vig = Vigenere(self.key)
             content = vig.encryptFile(message_file_name)
-            self.put_value(format(22, '08b'))
+            self.put_value(format(FLAG_TRUE, '08b'))
         else:
-            self.put_value(format(11, '08b'))
+            self.put_value(format(FLAG_FALSE, '08b'))
 
-        if (self.randomized):
-            self.put_value(format(22, '08b'))
+        #Add Randomized Frame Flag Bits
+        if (self.randomized_frame):
+            self.put_value(format(FLAG_TRUE, '08b'))
         else:
-            self.put_value(format(11, '08b'))
+            self.put_value(format(FLAG_FALSE, '08b'))
 
-        if (self.randomized):
+        #Add Randomized Pixel Flag Bits
+        if (self.randomized_pixel):
+            self.put_value(format(FLAG_TRUE, '08b'))
+        else:
+            self.put_value(format(FLAG_FALSE, '08b'))
+        
+        #If any random skip early frame
+        if (self.randomized_frame or self.randomized_pixel):
             random.seed(self.seed)
+            self.skipped_frame = self.curr_frame + 1
 
-            for i in range(24):
+            for i in range (self.skipped_frame):
                 self.frame_map.pop(0)
-                self.height_map.pop(0)
-                self.width_map.pop(0)
 
-            random.shuffle(self.frame_map)
-            random.shuffle(self.height_map)
-            random.shuffle(self.width_map)
+            #Reset index pointer
+            self.curr_frame = 0
+            self.curr_pos = 0
+            self.curr_channel = 0
+
+            if (self.randomized_frame):
+                print('Randomized Frame')
+                random.shuffle(self.frame_map)
+
+            if (self.randomized_pixel):
+                print('Randomized Pixel')
+                random.shuffle(self.map)
+
+        if (self.randomized_frame or self.randomized_pixel):
+            if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < (filedata + data + 136)):
+                raise Exception('Video is smaller than payload')
+        else:
+            if ((self.frame_size * self.width_size * self.height_size * self.channel_size) < (filedata + data + 104)):
+                raise Exception('Video is smaller than payload')
 
         self.put_value(format(filedata, '032b'))
         self.put_value(format(data, '064b'))
@@ -215,21 +247,28 @@ class AviStegano():
 
     def extract(self):
         encription = self.read_bits(8)
-        randomized = self.read_bits(8)
+        randomized_frame = self.read_bits(8)
+        randomized_pixel = self.read_bits(8)
 
-        # print(encription)
-        if (randomized == 22):
-            print('randomized')
+        if (randomized_frame == 22 or randomized_pixel == 22):
             random.seed(self.seed)
+            self.skipped_frame = (24 // (self.width_size * self.height_size * self.channel_size)) + 1
 
-            for i in range(24):
+            #Reset index pointer
+            self.curr_pos = 0
+            self.curr_channel = 0
+            self.curr_frame = 0
+
+            for i in range (self.skipped_frame):
                 self.frame_map.pop(0)
-                self.height_map.pop(0)
-                self.width_map.pop(0)
 
-            random.shuffle(self.frame_map)
-            random.shuffle(self.height_map)
-            random.shuffle(self.width_map)
+            if (randomized_frame == 22):
+                print('Randomized Frame')
+                random.shuffle(self.frame_map)
+
+            if (randomized_pixel == 22):
+                print('Randomized Pixel')
+                random.shuffle(self.map)
 
         filedata = self.read_bits(32)
         filename = bytearray()
@@ -254,28 +293,33 @@ class AviStegano():
 
         return filename, result
 
+    def psnr(self):
+        result = 0
+
+        for i in range (self.frame_size):
+            result += self.calculatePSNR(self.frames[i], self.initial_frames[i])
+
+        return result / self.frame_size
+
+    @staticmethod
+    def calculatePSNR(frame_one, frame_two):
+        mse = np.mean((frame_one - frame_two) ** 2)
+
+        if(mse == 0):
+            return 100
+
+        max_pixel = 256.0
+        psnr = 20 * math.log10(max_pixel / math.sqrt(mse))
+
+        return psnr
+
 
 if __name__ == "__main__":
-    # example = AviStegano('video/result2.avi', 'stegano', False, False)
-    # print(format(example.frames[0][0,0,0], '08b'))
-    # print(format(example.frames[0][0,0,1], '08b'))
-    # print(format(example.frames[0][0,0,2], '08b'))
-    # print(format(example.frames[0][0,1,0], '08b'))
-    # print(format(example.frames[0][0,1,1], '08b'))
-    # print(format(example.frames[0][0,1,2], '08b'))
-    # print(format(example.frames[0][0,2,0], '08b'))
-    # print(format(example.frames[0][0,2,1], '08b'))
-    # print(format(example.frames[0][0,2,2], '08b'))
-    # print(format(example.frames[0][0,3,0], '08b'))
-    # print(format(example.frames[0][0,3,1], '08b'))
-    # print(format(example.frames[0][0,3,2], '08b'))
-    # print(format(example.frames[0][0,4,0], '08b'))
-    # print(format(example.frames[0][0,4,1], '08b'))
-    # print(format(example.frames[0][0,4,2], '08b'))
-    # print(format(example.frames[0][0,5,0], '08b'))
+    # Embeed
+    # example = AviStegano('video/result2.avi', 'stegano', True, True, True)
+    # print(len(example.frames), example.frames[0].shape)
 
-    # print()
-    # example.embeed('service.js', 'video/contoh.avi')
+    # example.embeed('tujuhmega.jpg', 'video/contoh.avi')
     # print(format(example.aviVideo.getFrames()[0][0,0,0], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,0,1], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,0,2], '08b'))
@@ -284,6 +328,7 @@ if __name__ == "__main__":
     # print(format(example.aviVideo.getFrames()[0][0,1,2], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,2,0], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,2,1], '08b'))
+    # print()
     # print(format(example.aviVideo.getFrames()[0][0,2,2], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,3,0], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,3,1], '08b'))
@@ -292,22 +337,45 @@ if __name__ == "__main__":
     # print(format(example.aviVideo.getFrames()[0][0,4,1], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,4,2], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,5,0], '08b'))
+    # print()
+    # print(format(example.aviVideo.getFrames()[0][0,5,1], '08b'))
+    # print(format(example.aviVideo.getFrames()[0][0,5,2], '08b'))
+    # print(format(example.aviVideo.getFrames()[0][0,6,0], '08b'))
+    # print(format(example.aviVideo.getFrames()[0][0,6,1], '08b'))
+    # print(format(example.aviVideo.getFrames()[0][0,6,2], '08b'))
+    # print(format(example.aviVideo.getFrames()[0][0,7,0], '08b'))
+    # print(format(example.aviVideo.getFrames()[0][0,7,1], '08b'))
+    # print(format(example.aviVideo.getFrames()[0][0,7,2], '08b'))
 
-    # contoh = AviStegano('video/contoh.avi', 'stegano')
-    # print(format(contoh.frames[0][0,0,0], '08b'))
-    # print(format(contoh.frames[0][0,0,1], '08b'))
-    # print(format(contoh.frames[0][0,0,2], '08b'))
-    # print(format(contoh.frames[0][0,1,0], '08b'))
-    # print(format(contoh.frames[0][0,1,1], '08b'))
-    # print(format(contoh.frames[0][0,1,2], '08b'))
-    # print(format(contoh.frames[0][0,2,0], '08b'))
-    # print(format(contoh.frames[0][0,2,1], '08b'))
-    # print(format(contoh.frames[0][0,2,2], '08b'))
-    # print(format(contoh.frames[0][0,3,0], '08b'))
-    # print(format(contoh.frames[0][0,3,1], '08b'))
-    # print(format(contoh.frames[0][0,3,2], '08b'))
-    # print(format(contoh.frames[0][0,4,0], '08b'))
-    # print(format(contoh.frames[0][0,4,1], '08b'))
-    # print(format(contoh.frames[0][0,4,2], '08b'))
-    # print(format(contoh.frames[0][0,5,0], '08b'))
-    # contoh.extract()
+    # print(example.psnr())
+
+    # Extract
+    contoh = AviStegano('video/contoh.avi', 'stegano')
+    print(contoh.frames[0].shape)
+    print(format(contoh.frames[0][0,0,0], '08b'))
+    print(format(contoh.frames[0][0,0,1], '08b'))
+    print(format(contoh.frames[0][0,0,2], '08b'))
+    print(format(contoh.frames[0][0,1,0], '08b'))
+    print(format(contoh.frames[0][0,1,1], '08b'))
+    print(format(contoh.frames[0][0,1,2], '08b'))
+    print(format(contoh.frames[0][0,2,0], '08b'))
+    print(format(contoh.frames[0][0,2,1], '08b'))
+    print()
+    print(format(contoh.frames[0][0,2,2], '08b'))
+    print(format(contoh.frames[0][0,3,0], '08b'))
+    print(format(contoh.frames[0][0,3,1], '08b'))
+    print(format(contoh.frames[0][0,3,2], '08b'))
+    print(format(contoh.frames[0][0,4,0], '08b'))
+    print(format(contoh.frames[0][0,4,1], '08b'))
+    print(format(contoh.frames[0][0,4,2], '08b'))
+    print(format(contoh.frames[0][0,5,0], '08b'))
+    print()
+    print(format(contoh.frames[0][0,5,1], '08b'))
+    print(format(contoh.frames[0][0,5,2], '08b'))
+    print(format(contoh.frames[0][0,6,0], '08b'))
+    print(format(contoh.frames[0][0,6,1], '08b'))
+    print(format(contoh.frames[0][0,6,2], '08b'))
+    print(format(contoh.frames[0][0,7,0], '08b'))
+    print(format(contoh.frames[0][0,7,1], '08b'))
+    print(format(contoh.frames[0][0,7,2], '08b'))
+    contoh.extract()
