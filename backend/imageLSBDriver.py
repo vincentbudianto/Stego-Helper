@@ -1,15 +1,15 @@
 import imageLSB as lsb
 import cv2
 
-image_encode = cv2.imread('input.png')
-lsbe = lsb.imageLSB(image = image_encode, key = 'STEGANOGRAPHY', encrypted = False, randomized = False)
+image_encode = cv2.imread('image/input.png')
+lsbe = lsb.imageLSB(image = image_encode, key = 'STEGANOGRAPHY', encrypted = False, randomized = True)
 
-res_encode = lsbe.embed('secret.txt')
-# res_encode = lsbe.embed('mask.png')
-cv2.imwrite('res.png', res_encode)
+res_encode = lsbe.embed('image/secret.txt')
+# res_encode = lsbe.embed('image/mask.png')
+cv2.imwrite('image/res.png', res_encode)
 
-image_decode = cv2.imread('res.png')
-lsbd = lsb.imageLSB(image = image_decode, key = 'STEGANOGRAPHY', encrypted = False, randomized = False)
+image_decode = cv2.imread('image/res.png')
+lsbd = lsb.imageLSB(image = image_decode, key = 'STEGANOGRAPHY')
 
 res_decode = lsbd.extract()
 # with open(res_decode[0], "wb") as f:
