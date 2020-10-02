@@ -262,6 +262,8 @@ class AviStegano():
         self.aviVideo.setFrames(self.frames)
         self.aviVideo.writeVideo(output_filename)
 
+        return output_filename
+
     def extract(self, key, filename_message_output = ''):
         encription = self.read_bits(8)
         randomized_frame = self.read_bits(8)
@@ -313,7 +315,7 @@ class AviStegano():
             vig = Vigenere(key)
             vig.decryptFile(filename, filename)
 
-        return filename, result
+        return filename
 
     def psnr(self):
         result = 0
