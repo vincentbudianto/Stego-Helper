@@ -6,17 +6,7 @@ import random
 from vigenere import Vigenere
 
 class imageLSB():
-    def __init__(self, image, key, encrypted = False, randomized = False):
-        self.image = image
-        self.key = key
-        self.seed = sum(ord(k) for k in key)
-        self.encrypted = encrypted
-        self.randomized = randomized
-        self.height, self.width, self.channels = image.shape
-        self.size = self.width * self.height
-
-        self.map = list(range(self.height * self.width))
-
+    def __init__(self):
         self.mask_one = [1, 2, 4, 8, 16, 32, 64, 128]
         self.mask_or = self.mask_one.pop(0)
 
@@ -25,6 +15,22 @@ class imageLSB():
 
         self.curr_pos = 0
         self.curr_channel = 0
+
+    def readImage(self, filename):
+        try:
+            image = cv2.imread(filename)
+
+            self.image = image
+            self.height, self.width, self.channels = image.shape
+            self.size = self.width * self.height
+            self.map = list(range(self.size))
+            self.filename = filename
+        except Exception as exception:
+            print(exception)
+            print("Error while reading image file")
+
+    def writeImage(self, filename):
+        cv2.imwrite(filename, self.image)
 
     def get_xy(self, z):
         x = z // self.width
@@ -82,30 +88,32 @@ class imageLSB():
             self.image[x, y] = tuple(val)
             self.next_pos()
 
-    def embed(self, filename):
+    def embed(self, path, key, encrypted = False, randomized = False):
+        filename = path.split('/')[-1]
         filedata = len(filename)
-        content = open(filename, "rb").read()
+        content = open(path, "rb").read()
         data = len(content)
+        seed = sum(ord(k) for k in key)
 
-        if ((not self.randomized) and ((self.width * self.height * self.channels) < (filedata + data + 96))):
+        if ((not randomized) and ((self.width * self.height * self.channels) < (filedata + data + 96))):
             raise Exception('Image is smaller than payload')
-        elif ((self.randomized) and ((self.width * self.height * self.channels) < (filedata + data + 128))):
+        elif ((randomized) and ((self.width * self.height * self.channels) < (filedata + data + 128))):
             raise Exception('Image is smaller than payload')
 
-        if (self.encrypted):
-            vig = Vigenere(self.key)
-            content = vig.encryptFile(filename)
+        if (encrypted):
+            vig = Vigenere(key)
+            content = vig.encryptFile(path)
             self.put_value(format(22, '08b'))
         else:
             self.put_value(format(11, '08b'))
 
-        if (self.randomized):
+        if (randomized):
             self.put_value(format(22, '08b'))
         else:
             self.put_value(format(11, '08b'))
 
-        if (self.randomized):
-            random.seed(self.seed)
+        if (randomized):
+            random.seed(seed)
 
             for i in range(16):
                 self.map.pop(0)
@@ -123,12 +131,13 @@ class imageLSB():
 
         return self.image
 
-    def extract(self):
+    def extract(self, key):
         encrypted = self.read_bits(8)
         randomized = self.read_bits(8)
+        seed = sum(ord(k) for k in key)
 
         if (randomized == 22):
-            random.seed(self.seed)
+            random.seed(seed)
 
             for i in range(16):
                 self.map.pop(0)
@@ -149,17 +158,18 @@ class imageLSB():
 
         filename = filename.decode()
 
-        with open(filename, "wb") as f:
+        with open('result/image/' + filename, "wb") as f:
             f.write(result)
 
         if (encrypted == 22):
-            vig = Vigenere(self.key)
-            vig.decryptFile(filename, ('image/decrypted' + filename))
+            vig = Vigenere(key)
+            vig.decryptFile('result/image/' + filename, ('result/image/decrypted_' + filename))
 
         return filename, result
 
-    def psnr(self, image):
-        mse = np.mean((image - self.image) ** 2)
+    @staticmethod
+    def psnr(image_one, image_two):
+        mse = np.mean((image_one - image_two) ** 2)
 
         if (mse == 0):
             return 100
@@ -170,19 +180,34 @@ class imageLSB():
         return psnr
 
 if __name__ == '__main__':
-    image_encode = cv2.imread('image/input.png')
-    lsbe = imageLSB(image = image_encode, key = 'STEGANOGRAPHY', encrypted = False, randomized = True)
+    print('<<<<< embed >>>>>>')
+    # image_encode = cv2.imread('image/input.png')
+    # lsbe = imageLSB(image = image_encode, key = 'STEGANOGRAPHY', encrypted = True, randomized = True)
+    lsbe = imageLSB()
+    lsbe.readImage('image/input.png')
 
-    res_encode = lsbe.embed('image/secret.txt')
+    res_encode = lsbe.embed(path = 'image/secret.txt', key = 'STEGANOGRAPHY', encrypted = False, randomized = False)
+    # print('image_encode shape :', image_encode.shape)
+    print('  res_encode shape :', res_encode.shape)
     # res_encode = lsbe.embed('image/mask.png')
-    cv2.imwrite('image/res.png', res_encode)
+    lsbe.writeImage('result/image/resLSB.png')
 
-    image_decode = cv2.imread('image/res.png')
-    lsbd = imageLSB(image = image_decode, key = 'STEGANOGRAPHY')
+    print('<<<<< extract >>>>>>')
+    # image_decode = cv2.imread('result/image/resLSB.png')
+    # lsbd = imageLSB(image = image_decode, key = 'STEGANOGRAPHY')
+    lsbd = imageLSB()
+    lsbd.readImage('result/image/resLSB.png')
 
-    res_decode = lsbd.extract()
-    # with open(res_decode[0], "wb") as f:
-    # 	f.write(res_decode[1])
+    filename, content = lsbd.extract(key = 'STEGANOGRAPHY')
 
-    # image_encode = cv2.imread('input.png')
-    # print('psnr :', lsbd.psnr(image_encode))
+    # print(' image_decode shape :', image_decode.shape)
+    print('res_decode filename :', filename)
+    print(' res_decode content :', len(content))
+
+    with open(filename, "wb") as f:
+    	f.write(content)
+
+    lsb = imageLSB()
+    image_one = cv2.imread('image/input.png')
+    image_two = cv2.imread('result/image/resLSB.png')
+    print('psnr :', lsb.psnr(image_one, image_two))

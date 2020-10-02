@@ -79,7 +79,6 @@ class AviVideo:
             video_output.write(frame)
         video_output.release()
         return
-    
 
 class AviStegano():
     def __init__(self):
@@ -110,7 +109,7 @@ class AviStegano():
 
         #Save initial frame
         self.initial_frames = []
-        
+
     def readVideo(self, video_filename):
         #Read aviVideo
         self.aviVideo = AviVideo()
@@ -163,7 +162,7 @@ class AviStegano():
 
     def read_bit(self):
         height_idx, width_idx = self.get_index(self.map[self.curr_pos])
-        
+
         val = self.frames[self.frame_map[self.curr_frame]][height_idx, width_idx, self.curr_channel]
         val = int(val) & self.mask_or
 
@@ -198,7 +197,7 @@ class AviStegano():
     def embeed(self, message_file_name, output_filename, key, encryption=False, randomized_frame=False, randomized_pixel=False):
         #Set AviStegano Metadata
         seed = sum(ord(k) for k in key)
-        
+
         filedata = len(message_file_name)
         content = open(message_file_name, "rb").read()
         data = len(content)
@@ -223,7 +222,7 @@ class AviStegano():
             self.put_value(format(FLAG_TRUE, '08b'))
         else:
             self.put_value(format(FLAG_FALSE, '08b'))
-        
+
         #If any random skip early frame
         if (randomized_frame or randomized_pixel):
             random.seed(seed)

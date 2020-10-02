@@ -11,7 +11,7 @@ Wc = np.array([[0, 1, 0, 1, 0, 1, 0, 1],
                [0, 1, 0, 1, 0, 1, 0, 1],
                [1, 0, 1, 0, 1, 0, 1, 0]])
 
-class Message():
+class messageBPCS():
     def __init__(self, filename = None, content = None, key = None, threshold = 0.3, encrypted = False, randomized = False, block_size = 8):
         self.filename = filename
         self.content = content
@@ -231,25 +231,27 @@ class Message():
 
 if __name__ == '__main__':
     print('<<<<< message to bitplane >>>>>>')
-    name = 'image/secret.txt'
-    # name = 'image/mask.png'
-    contents = open(name, 'rb').read()
-    msg = Message(filename = name, content = contents)
-    bitplane_msg = msg.set_message()
-    print('bitplane_msg :', len(bitplane_msg))
+    path = 'image/secret.txt'
+    # path = 'image/mask.png'
+    name = path.split('/')[-1]
+    contents = open(path, 'rb').read()
+    smsg = messageBPCS(filename = name, content = contents)
+    bitplane = smsg.set_message()
+    print('bitplane :', len(bitplane))
 
     print('\nmessage complexity :')
-    for i in range(len(bitplane_msg)):
-        c = msg.complexity(bitplane_msg[i])
+    for i in range(len(bitplane)):
+        c = smsg.complexity(bitplane[i])
 
         if (c <= 0.3):
             print('complexity', i, ':', c)
-            print(bitplane_msg[i])
+            print(bitplane[i])
 
     print('\n\n<<<<< bitplane to message >>>>>>')
-    msg12 = Message()
-    filename, content = msg12.get_message(bitplane_msg)
+    gmsg = messageBPCS()
+    filename, content = gmsg.get_message(bitplane)
     print('filename :', filename)
+    print(' content :', len(content))
     # with open('image/test.png', 'wb') as fout:
-    with open('image/test.txt', 'wb') as fout:
+    with open('result/message/' + filename, 'wb') as fout:
         fout.write(content)
