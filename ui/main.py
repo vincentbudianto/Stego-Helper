@@ -162,7 +162,6 @@ class Ui_MainWindow(object):
         self.pushButton_3.setText(_translate("MainWindow", "Extract"))
         self.menuStegonya_Meyer.setTitle(_translate("MainWindow", "Stegonya Meyer"))
 
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
