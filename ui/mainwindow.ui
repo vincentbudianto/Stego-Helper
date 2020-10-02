@@ -39,7 +39,12 @@
          </property>
          <item>
           <property name="text">
-           <string>Image</string>
+           <string>Image (LSB)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Image (BPCS)</string>
           </property>
          </item>
          <item>
@@ -85,28 +90,37 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QWidget" name="widget_4" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <widget class="QWidget" name="widget_3" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
-           <widget class="QWidget" name="widget_2" native="true">
-            <layout class="QVBoxLayout" name="verticalLayout_3">
+           <widget class="QWidget" name="widget" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
-              <widget class="QGroupBox" name="groupBox_2">
+              <widget class="QGroupBox" name="groupBox">
                <property name="title">
-                <string>Type</string>
+                <string>Encryption</string>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout">
+               <layout class="QVBoxLayout" name="verticalLayout_2">
                 <item>
-                 <widget class="QRadioButton" name="radioButton">
+                 <widget class="QCheckBox" name="checkBox">
                   <property name="text">
-                   <string>LSB</string>
+                   <string>Enable</string>
                   </property>
                  </widget>
                 </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_3">
+               <property name="title">
+                <string>Random</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_4">
                 <item>
-                 <widget class="QRadioButton" name="radioButton_2">
+                 <widget class="QCheckBox" name="checkBox_2">
                   <property name="text">
-                   <string>BPCS</string>
+                   <string>Randomized Pixel</string>
                   </property>
                  </widget>
                 </item>
@@ -117,57 +131,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QWidget" name="widget_3" native="true">
-            <layout class="QVBoxLayout" name="verticalLayout_6">
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="title">
+             <string>Key</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QWidget" name="widget" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
-                <item>
-                 <widget class="QGroupBox" name="groupBox">
-                  <property name="title">
-                   <string>Encryption</string>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_2">
-                   <item>
-                    <widget class="QCheckBox" name="checkBox">
-                     <property name="text">
-                      <string>Enable</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QGroupBox" name="groupBox_3">
-                  <property name="title">
-                   <string>Random</string>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_4">
-                   <item>
-                    <widget class="QCheckBox" name="checkBox_2">
-                     <property name="text">
-                      <string>Randomized Pixel</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="groupBox_4">
-               <property name="title">
-                <string>Key</string>
-               </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
-                <item>
-                 <widget class="QLineEdit" name="lineEdit"/>
-                </item>
-               </layout>
-              </widget>
+              <widget class="QLineEdit" name="lineEdit"/>
              </item>
             </layout>
            </widget>
@@ -262,6 +232,9 @@
        </item>
       </layout>
      </widget>
+    </item>
+    <item>
+     <widget class="QPlainTextEdit" name="plainTextEdit"/>
     </item>
    </layout>
   </widget>
