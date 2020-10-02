@@ -246,10 +246,12 @@ class AviStegano():
 
         if (randomized_frame or randomized_pixel):
             if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < (filedata + data + 136)):
-                raise Exception('Video is smaller than payload')
+                # raise Exception('Video is smaller than payload')
+                return 'FAILED'
         else:
             if ((self.frame_size * self.width_size * self.height_size * self.channel_size) < (filedata + data + 104)):
-                raise Exception('Video is smaller than payload')
+                # raise Exception('Video is smaller than payload')
+                return 'FAILED'
 
         self.put_value(format(filedata, '032b'))
         self.put_value(format(data, '064b'))
