@@ -27,7 +27,7 @@ class imageLSB():
         self.curr_channel = 0
 
     def get_xy(self, z):
-        x = z // self.height
+        x = z // self.width
         y = z % self.width
 
         return x, y
