@@ -2,8 +2,11 @@ import wave
 import random
 import numpy as np
 import math
+import os
 
 from vigenere import Vigenere
+from pathlib import Path
+import ntpath
 
 def save_file(path, content):
     print(path)
@@ -12,80 +15,13 @@ def save_file(path, content):
     new_file.close()
 
 class Audio:
-    def __init__(self, data, files=None, mode='embedding'):
+    def __init__(self):
         self.reset()
         self.counter = 0
 
-        # Embedding
-        if (mode == 'embedding'):
-            # Processing input files
-            self.key = data['key']
-            self.audio_type = data['audioType']
-            self.is_encrypted = bool(data['encrypted'])
-            self.is_randomized = bool(data['randomized'])
-
-            if files != None:
-                print("Saving files")
-                self.container_file = files['containerFile']
-                self.input_file = files['inputFile']
-                self.container_file_name = self.container_file.filename
-                self.input_file_name = self.input_file.filename
-                self.container_file_path = "./audiostore/container/" + self.container_file_name
-                self.input_file_path = "./audiostore/input/" + self.input_file_name
-                save_file(self.container_file_path, self.container_file.read())
-                save_file(self.input_file_path, self.input_file.read())
-            else:
-                self.container_file_name = data['containerFileName']
-                self.input_file_name = data['inputFileName']
-                self.container_file_path = "./audiostore/container/" + self.container_file_name
-                self.input_file_path = "./audiostore/input/" + self.input_file_name
-
-            # Processing encrypted file (target)
-            if not 'encryptedFileName' in data:
-                temp = self.container_file_name.split('.')
-                self.encrypted_file_name = temp[0] + "_encrypted." + temp[1]
-            else:
-                self.encrypted_file_name = data['encryptedFileName']
-            self.encrypted_file_path = "./audiostore/encrypted/" + self.encrypted_file_name
-
-            # Processing data files
-            self.container_file_audio = wave.open(self.container_file_path, "r")
-            self.container_file_params = self.container_file_audio.getparams()
-            self.container_file_length = self.container_file_audio.getnframes()
-            self.container_file_bytes = bytearray(list(self.container_file_audio.readframes(self.container_file_length)))
-            self.container_file_length = len(self.container_file_bytes)
-            self.input_file_bytes = open(self.input_file_path, "rb").read()
-
-        else:
-            # Get data files
-            self.key = data['key']
-            self.audio_type = data['audioType']
-
-            # Save file
-            if files != None:
-                print("Saving files")
-                self.encrypted_file = files['encryptedFile']
-                self.encrypted_file_name = self.encrypted_file.filename
-                self.encrypted_file_path = "./audiostore/encrypted/" + self.encrypted_file_name
-                save_file(self.encrrypted_file_path, self.encrypted_file.read())
-            else:
-                self.encrypted_file_name = data['encryptedFileName']
-                self.encrypted_file_path = "./audiostore/encrypted/" + self.encrypted_file_name
-
-            # Processing encrypted file (target)
-            if not 'containerFileName' in data:
-                temp = self.encrypted_file_name.split('.')
-                self.container_file_name = temp[0] + "_extracted." + temp[1]
-            else:
-                self.container_file_name = data['extractedFileName']
-            self.container_file_path = "./audiostore/container/" + self.container_file_name
-
-            # Processing data files
-            self.container_file_audio = wave.open(self.encrypted_file_path, "r")
-            self.container_file_params = self.container_file_audio.getparams()
-            self.container_file_length = self.container_file_audio.getnframes()
-            self.container_file_bytes = bytearray(list(self.container_file_audio.readframes(self.container_file_length)))
-            self.container_file_length = len(self.container_file_bytes)
+        self.key = ""
+        self.is_encrypted = False
+        self.is_randomized = False
 
     def reset(self):
         self.mask_one = [1, 2, 4, 8, 16]
@@ -93,6 +29,20 @@ class Audio:
         self.mask_zero = [254, 253, 251, 247, 239]
         self.mask_and = self.mask_zero.pop(0)
         self.curr_byte = 0
+    
+    def read_container_file(self, container_file_path):
+        self.container_file_path = container_file_path
+        self.container_file_audio = wave.open(self.container_file_path, "r")
+        self.container_file_params = self.container_file_audio.getparams()
+        self.container_file_length = self.container_file_audio.getnframes()
+        self.container_file_bytes = bytearray(list(self.container_file_audio.readframes(self.container_file_length)))
+        self.container_file_length = len(self.container_file_bytes)
+        print(self.container_file_length)
+    
+    def read_input_file(self, input_file_path):
+        self.input_file_path = input_file_path
+        self.input_file_name = ntpath.basename(input_file_path)
+        self.input_file_bytes = open(self.input_file_path, "rb").read()
 
     def next_pos(self):
         if (self.curr_byte == (self.container_file_length - 1)):
@@ -132,7 +82,11 @@ class Audio:
 
             self.next_pos()
 
-    def embedding(self):
+    def embedding(self, key, is_randomized, is_encrypted, output_file_name):
+        self.key = key
+        self.is_randomized = is_randomized
+        self.is_encrypted = is_encrypted
+
         inputfilename_size = len(self.input_file_name)
         inputfile_size = len(self.input_file_bytes)
 
@@ -144,7 +98,7 @@ class Audio:
 
         # Limiting LSB into last 2 bits
         if self.container_file_length < 4 * (152 + inputfilename_size + inputfile_size):
-            raise Exception('Audio is smaller than payload')
+            return 'FAIL'
 
         if self.is_encrypted:
             print("Encrypting")
@@ -159,22 +113,17 @@ class Audio:
         else:
             self.put_value(format(11, '08b'))
 
-        if self.audio_type == 'stereo':
-            self.put_value(format(22, '08b'))
-        else:
-            self.put_value(format(11, '08b'))
-
         # Randomizing bits
         if self.is_randomized:
             print("Randomizing bytes")
             total_ASCII = 0
             for word in self.key:
                 total_ASCII += ord(word)
-            for i in range(24):
+            for i in range(16):
                 test = self.byte_map.pop(0)
             random.seed(total_ASCII)
             random.shuffle(self.byte_map)
-            for i in range(23, -1, -1):
+            for i in range(15, -1, -1):
                 self.byte_map.insert(0, i)
 
         self.put_value(format(inputfilename_size, '064b'))
@@ -190,29 +139,32 @@ class Audio:
 
         ### WRITE FILES ###
         print("Writing output")
-        with wave.open(self.encrypted_file_path, 'wb') as wav_file:
+        output_file_path = str(Path(self.container_file_path).parent) + "/" + output_file_name
+        self.encrypted_file_path = output_file_path
+        with wave.open(output_file_path, 'wb') as wav_file:
             wav_file.setparams(self.container_file_params)
             wav_file.writeframes(self.container_file_bytes)
             wav_file.close()
 
-    def extract(self):
+    def extract(self, key, output_file_name=None):
+        self.key = key
+
         print("Preparing Byte Map")
         self.byte_map = list(range(self.container_file_length))
 
         is_encrypted = self.read_bits(8)
         is_randomized = self.read_bits(8)
-        audio_type = self.read_bits(8)
 
         if (is_randomized == 22):
             print("Randomizing bytes")
             total_ASCII = 0
             for word in self.key:
                 total_ASCII += ord(word)
-            for i in range(24):
+            for i in range(16):
                 test = self.byte_map.pop(0)
             random.seed(total_ASCII)
             random.shuffle(self.byte_map)
-            for i in range(23, -1, -1):
+            for i in range(15, -1, -1):
                 self.byte_map.insert(0, i)
                 
         filename_size = self.read_bits(64)
@@ -230,21 +182,16 @@ class Audio:
 
         ### WRITE FILES ###
         print("Writing output")
-        with wave.open(self.container_file_path, 'wb') as wav_file:
-            wav_file.setparams(self.container_file_params)
-            wav_file.writeframes(self.container_file_bytes)
-            wav_file.close()
-
-        new_filename = './audiostore/output/' + filename.decode()
-        self.output_file_name = filename.decode()
-        self.output_file_path = new_filename
-        save_file(new_filename, content)
+        if output_file_name == None:
+            output_file_name = filename.decode()
+        
+        output_file_path = str(Path(self.container_file_path).parent) + "/" + output_file_name
+        save_file(output_file_path, content)
 
         if (is_encrypted == 22):
             print("Decrypting")
             vig = Vigenere(self.key)
-            vig.decryptFile(new_filename, ('./audiostore/output/decrypted_' + filename.decode()))
-            self.output_file_path = './audiostore/output/decrypted_' + filename.decode()
+            vig.decryptFile(output_file_path, output_file_path)
 
 def audio_psnr(original_file, embedded_file):
     file_original = wave.open(original_file, 'rb')
@@ -273,15 +220,15 @@ def audio_psnr(original_file, embedded_file):
 
 
 if __name__ == "__main__":
-    audio_execute = 'embedding'
+    audio = Audio()
+    audio_execute = 'extract'
     if audio_execute == 'embedding':
-        data = {'key':'FUSRODAH', 'encrypted':True, 'randomized':True, 'audioType':'stereo', 'containerFileName':'weebs.wav', 'inputFileName':'poke.mp3'}
-        audio = Audio(data)
-        audio.embedding()
+        audio.read_container_file("./audiostore/container/weebs.wav")
+        audio.read_input_file("./audiostore/input/weed.wav")
+        audio.embedding('FUSRODAH', True, True, 'fusrodah.wav')
         print("Counting PSNR")
         print("PSNR =", audio_psnr(audio.container_file_path, audio.encrypted_file_path))
     else:
-        data = {'key':'FUSRODAH', 'audioType':'stereo', 'encryptedFileName':'weebs_encrypted.wav'}
-        audio = Audio(data, mode='extract')
-        audio.extract()
+        audio.read_container_file("./audiostore/encrypted/fusrodah.wav")
+        audio.extract('FUSRODAH', None)
     print("Done")
