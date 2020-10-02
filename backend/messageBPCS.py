@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import os
+import random
 
 Wc = np.array([[0, 1, 0, 1, 0, 1, 0, 1],
                [1, 0, 1, 0, 1, 0, 1, 0],
@@ -32,10 +33,28 @@ class messageBPCS():
         else:
             self.data = None
 
+        if (self.key != None):
+            self.seed = sum(ord(k) for k in key)
+
         self.header = None
         self.header_bitplane = []
         self.content_bitplane = []
         self.conjugation_map = []
+
+    def shuffle(self, bitplane):
+        random.seed(self.seed)
+        random.shuffle(bitplane)
+
+        return bitplane
+
+    def unshuffle(self, bitplane):
+        n = len(bitplane)
+        perm = [i for i in range(1, (n + 1))]
+        shuffled_perm = self.shuffle(perm)
+        unshuffled = list(zip(bitplane, shuffled_perm))
+        unshuffled.sort(key = lambda x: x[1])
+
+        return [a for (a, b) in unshuffled]
 
     def to_binary(self, message):
         binary = [format(byte, '08b') for byte in message]
@@ -89,7 +108,7 @@ class messageBPCS():
 
         return result
 
-    def create_header(self):
+    def set_header(self):
         header = ''
 
         if (self.encrypted):
@@ -110,17 +129,103 @@ class messageBPCS():
         binary = self.to_binary(self.header)
         self.header_bitplane = self.to_bitplane(binary)
 
+        print(header)
+
         return self.header_bitplane
 
-    def create_content(self):
+    def get_header(self):
+        self.header = self.get_byte(self.header_bitplane)
+        self.header = self.header.decode('utf-8', errors='ignore')
+
+        headers = self.header.split('|')
+        print(self.header)
+
+        if (int(headers[0]) == 22):
+            self.encrypted = True
+        elif (int(headers[0]) == 11):
+            self.encrypted = False
+
+        if (int(headers[1]) == 22):
+            self.randomized = True
+        elif (int(headers[1]) == 11):
+            self.randomized = False
+
+        self.filedata = int(headers[2])
+        self.data = int(headers[3])
+
+        return headers[4][:self.filedata]
+
+    def set_content(self):
         content = self.to_binary(self.content)
         self.content_bitplane = self.to_bitplane(content)
 
+        if (self.randomized):
+            for i in range(len(self.content_bitplane)):
+                binary = []
+                old = self.get_byte(self.content_bitplane[i])
+                new = self.shuffle(old)
+
+                for z in range(0, len(new), self.block_size):
+                    byte = new[z:(z + self.block_size)]
+                    byte = [format(bit, '01b') for bit in byte]
+                    binary.append(''.join([''.join(bit) for bit in byte]))
+
+                self.content_bitplane[i] = np.asarray(self.to_bitplane(binary))[0]
+
+    def get_content(self):
+        if (self.randomized):
+            for i in range(len(self.content_bitplane)):
+                binary = []
+                old = self.get_byte(self.content_bitplane[i])
+                new = self.unshuffle(old)
+
+                for z in range(0, len(new), self.block_size):
+                    byte = new[z:(z + self.block_size)]
+                    byte = [format(bit, '01b') for bit in byte]
+                    binary.append(''.join([''.join(bit) for bit in byte]))
+
+                self.content_bitplane[i] = self.to_bitplane(binary)[0]
+
+            content = self.get_byte(self.content_bitplane)[:self.data]
+        else:
+            content = self.get_byte(self.content_bitplane)[:self.data]
+
+        return content
+
     def conjugate_content(self):
-        for i in range(len(self.content_bitplane)):
-            if (self.complexity(self.content_bitplane[i]) < self.threshold):
-                self.content_bitplane[i] = self.conjugate(self.content_bitplane[i])
+        i = 0
+        j = 0
+
+        while (i < len(self.header_bitplane)):
+            if (self.complexity(self.header_bitplane[i]) < self.threshold):
+                self.header_bitplane[i] = self.conjugate(self.header_bitplane[i])
                 self.conjugation_map.append(i)
+
+            i += 1
+
+        while (j < len(self.content_bitplane)):
+            if (self.complexity(self.content_bitplane[j]) < self.threshold):
+                self.content_bitplane[j] = self.conjugate(self.content_bitplane[j])
+                self.conjugation_map.append(i + j)
+
+            j += 1
+
+    def unconjugate_content(self, bitplane):
+        cmap = []
+
+        for i in range(len(self.conjugation_map)):
+            self.conjugation_map[i] = self.conjugate(self.conjugation_map[i])
+
+        for plane in self.conjugation_map:
+            cmap.append(''.join([''.join(bit) for bit in plane.astype(str)]))
+
+        cmap = ''.join(cmap)
+
+        for i in range(len(bitplane)):
+            if (cmap[i] == '1'):
+                bitplane[i] = self.conjugate(bitplane[i])
+
+        return bitplane
 
     def conjugation_mapping(self):
         conjugation_map = ['0' for i in range(len(self.bitplane))]
@@ -153,53 +258,13 @@ class messageBPCS():
 
         return result
 
-    def from_bitplane(self, bitplane):
-        cmap = []
-
-        for i in range(len(self.conjugation_map)):
-            self.conjugation_map[i] = self.conjugate(self.conjugation_map[i])
-
-        for plane in self.conjugation_map:
-            cmap.append(''.join([''.join(bit) for bit in plane.astype(str)]))
-
-        cmap = ''.join(cmap)
-
-        for i in range(len(bitplane)):
-            if (cmap[i] == '1'):
-                bitplane[i] = self.conjugate(bitplane[i])
-
-        return bitplane
-
-    def get_header(self):
-        self.header = self.get_byte(self.header_bitplane)
-        self.header = self.header.decode('utf-8', errors='ignore')
-
-        headers = self.header.split('|')
-
-        if (int(headers[0]) == 22):
-            self.encrypted = True
-        elif (int(headers[0]) == 11):
-            self.encrypted = False
-
-        if (int(headers[1]) == 22):
-            self.randomized = True
-        elif (int(headers[1]) == 11):
-            self.randomized = False
-
-        self.filedata = int(headers[2])
-        self.data = int(headers[3])
-
-        return headers[4][:self.filedata]
-
-    def get_content(self):
-        return self.get_byte(self.content_bitplane)[:self.data]
-
     def set_message(self):
-        self.create_header()
-        self.create_content()
+        self.set_header()
+        self.set_content()
         self.conjugate_content()
 
         self.bitplane += self.int_bitplane(len(self.header_bitplane))
+        self.bitplane += self.int_bitplane(len(self.content_bitplane))
         self.bitplane += self.header_bitplane
         self.bitplane += self.content_bitplane
 
@@ -218,24 +283,32 @@ class messageBPCS():
             self.conjugation_map.append(bitplane.pop(0))
 
         header_length = self.get_int(bitplane.pop(0))
+        content_length = self.get_int(bitplane.pop(0))
+        temp = []
 
-        for j in range(header_length):
-            self.header_bitplane.append(bitplane.pop(0))
+        for j in range(header_length + content_length):
+            temp.append(bitplane.pop(0))
 
-        bitplane = self.from_bitplane(bitplane)
-        self.content_bitplane = bitplane
+        temp = self.unconjugate_content(temp)
+
+        for k in range(header_length):
+            self.header_bitplane.append(temp.pop(0))
+
+        for l in range(content_length):
+            self.content_bitplane.append(temp.pop(0))
+
         self.filename = self.get_header()
         self.content = self.get_content()
 
-        return self.filename, self.content
+        return self.filename, self.content, self.encrypted
 
 if __name__ == '__main__':
     print('<<<<< message to bitplane >>>>>>')
-    path = 'image/secret.txt'
+    path = 'image/test.txt'
     # path = 'image/mask.png'
     name = path.split('/')[-1]
     contents = open(path, 'rb').read()
-    smsg = messageBPCS(filename = name, content = contents)
+    smsg = messageBPCS(filename = name, content = contents, key = 'STEGANOGRAPHY', randomized = False, encrypted = False)
     bitplane = smsg.set_message()
     print('bitplane :', len(bitplane))
 
@@ -248,10 +321,11 @@ if __name__ == '__main__':
             print(bitplane[i])
 
     print('\n\n<<<<< bitplane to message >>>>>>')
-    gmsg = messageBPCS()
-    filename, content = gmsg.get_message(bitplane)
-    print('filename :', filename)
-    print(' content :', len(content))
+    gmsg = messageBPCS(key = 'STEGANOGRAPHY')
+    filename, content, encrypted = gmsg.get_message(bitplane)
+    print(' filename :', filename)
+    print('encrypted :', encrypted)
+    print('  content :', content)
     # with open('image/test.png', 'wb') as fout:
     with open('result/message/' + filename, 'wb') as fout:
         fout.write(content)

@@ -24,7 +24,6 @@ class imageLSB():
             self.height, self.width, self.channels = image.shape
             self.size = self.width * self.height
             self.map = list(range(self.size))
-            self.filename = filename
         except Exception as exception:
             print(exception)
             print("Error while reading image file")
@@ -93,7 +92,6 @@ class imageLSB():
         filedata = len(filename)
         content = open(path, "rb").read()
         data = len(content)
-        seed = sum(ord(k) for k in key)
 
         if ((not randomized) and ((self.width * self.height * self.channels) < (filedata + data + 96))):
             raise Exception('Image is smaller than payload')
@@ -113,6 +111,7 @@ class imageLSB():
             self.put_value(format(11, '08b'))
 
         if (randomized):
+            seed = sum(ord(k) for k in key)
             random.seed(seed)
 
             for i in range(16):
@@ -148,24 +147,24 @@ class imageLSB():
         filename = bytearray()
 
         data = self.read_bits(64)
-        result = bytearray()
+        content = bytearray()
 
         for byte in range(filedata):
             filename.extend([self.read_bits(8)])
 
         for byte in range(data):
-            result.extend([self.read_bits(8)])
+            content.extend([self.read_bits(8)])
 
         filename = filename.decode()
 
         with open('result/image/' + filename, "wb") as f:
-            f.write(result)
+            f.write(content)
 
         if (encrypted == 22):
             vig = Vigenere(key)
             vig.decryptFile('result/image/' + filename, ('result/image/decrypted_' + filename))
 
-        return filename, result
+        return filename, content
 
     @staticmethod
     def psnr(image_one, image_two):
@@ -181,32 +180,27 @@ class imageLSB():
 
 if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
-    # image_encode = cv2.imread('image/input.png')
-    # lsbe = imageLSB(image = image_encode, key = 'STEGANOGRAPHY', encrypted = True, randomized = True)
     lsbe = imageLSB()
     lsbe.readImage('image/input.png')
 
     res_encode = lsbe.embed(path = 'image/secret.txt', key = 'STEGANOGRAPHY', encrypted = False, randomized = False)
-    # print('image_encode shape :', image_encode.shape)
-    print('  res_encode shape :', res_encode.shape)
-    # res_encode = lsbe.embed('image/mask.png')
+    # res_encode = lsbe.embed(path = 'image/mask.png', key = 'STEGANOGRAPHY', encrypted = False, randomized = False)
+    print('  embed shape :', res_encode.shape)
     lsbe.writeImage('result/image/resLSB.png')
 
     print('<<<<< extract >>>>>>')
-    # image_decode = cv2.imread('result/image/resLSB.png')
-    # lsbd = imageLSB(image = image_decode, key = 'STEGANOGRAPHY')
     lsbd = imageLSB()
     lsbd.readImage('result/image/resLSB.png')
 
     filename, content = lsbd.extract(key = 'STEGANOGRAPHY')
 
-    # print(' image_decode shape :', image_decode.shape)
-    print('res_decode filename :', filename)
-    print(' res_decode content :', len(content))
+    print('extract filename :', filename)
+    print(' extract content :', len(content))
 
-    with open(filename, "wb") as f:
-    	f.write(content)
+    # with open(filename, "wb") as f:
+    # 	f.write(content)
 
+    print('<<<<< psnr >>>>>>')
     lsb = imageLSB()
     image_one = cv2.imread('image/input.png')
     image_two = cv2.imread('result/image/resLSB.png')
