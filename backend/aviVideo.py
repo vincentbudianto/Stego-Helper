@@ -86,7 +86,6 @@ class AviStegano():
         #Read aviVideo
         self.aviVideo = AviVideo()
         self.aviVideo.readVideo(filename_video)
-        self.initial_frames = self.aviVideo.getFrames()
         self.frames = self.aviVideo.getFrames()
 
         #Set AviStegano Metadata
@@ -116,6 +115,11 @@ class AviStegano():
         self.curr_pos = 0
         self.curr_channel = 0
         self.skipped_frame = 0
+
+        #Save initial frame
+        self.initial_frames = []
+        for i in range (self.frame_size):
+            self.initial_frames.append(np.copy(self.frames[0]))
 
     def get_index(self, position):
         height_idx = position // self.width_size
@@ -316,10 +320,10 @@ class AviStegano():
 
 if __name__ == "__main__":
     # Embeed
-    # example = AviStegano('video/result2.avi', 'stegano', True, True, True)
+    # example = AviStegano('video/result2.avi', 'stegano', False, False, False)
     # print(len(example.frames), example.frames[0].shape)
 
-    # example.embeed('tujuhmega.jpg', 'video/contoh.avi')
+    # example.embeed('secret.txt', 'video/contoh.avi')
     # print(format(example.aviVideo.getFrames()[0][0,0,0], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,0,1], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,0,2], '08b'))
@@ -347,35 +351,35 @@ if __name__ == "__main__":
     # print(format(example.aviVideo.getFrames()[0][0,7,1], '08b'))
     # print(format(example.aviVideo.getFrames()[0][0,7,2], '08b'))
 
-    # print(example.psnr())
+    print(example.psnr())
 
     # Extract
-    contoh = AviStegano('video/contoh.avi', 'stegano')
-    print(contoh.frames[0].shape)
-    print(format(contoh.frames[0][0,0,0], '08b'))
-    print(format(contoh.frames[0][0,0,1], '08b'))
-    print(format(contoh.frames[0][0,0,2], '08b'))
-    print(format(contoh.frames[0][0,1,0], '08b'))
-    print(format(contoh.frames[0][0,1,1], '08b'))
-    print(format(contoh.frames[0][0,1,2], '08b'))
-    print(format(contoh.frames[0][0,2,0], '08b'))
-    print(format(contoh.frames[0][0,2,1], '08b'))
-    print()
-    print(format(contoh.frames[0][0,2,2], '08b'))
-    print(format(contoh.frames[0][0,3,0], '08b'))
-    print(format(contoh.frames[0][0,3,1], '08b'))
-    print(format(contoh.frames[0][0,3,2], '08b'))
-    print(format(contoh.frames[0][0,4,0], '08b'))
-    print(format(contoh.frames[0][0,4,1], '08b'))
-    print(format(contoh.frames[0][0,4,2], '08b'))
-    print(format(contoh.frames[0][0,5,0], '08b'))
-    print()
-    print(format(contoh.frames[0][0,5,1], '08b'))
-    print(format(contoh.frames[0][0,5,2], '08b'))
-    print(format(contoh.frames[0][0,6,0], '08b'))
-    print(format(contoh.frames[0][0,6,1], '08b'))
-    print(format(contoh.frames[0][0,6,2], '08b'))
-    print(format(contoh.frames[0][0,7,0], '08b'))
-    print(format(contoh.frames[0][0,7,1], '08b'))
-    print(format(contoh.frames[0][0,7,2], '08b'))
-    contoh.extract()
+    # contoh = AviStegano('video/contoh.avi', 'stegano')
+    # print(contoh.frames[0].shape)
+    # print(format(contoh.frames[0][0,0,0], '08b'))
+    # print(format(contoh.frames[0][0,0,1], '08b'))
+    # print(format(contoh.frames[0][0,0,2], '08b'))
+    # print(format(contoh.frames[0][0,1,0], '08b'))
+    # print(format(contoh.frames[0][0,1,1], '08b'))
+    # print(format(contoh.frames[0][0,1,2], '08b'))
+    # print(format(contoh.frames[0][0,2,0], '08b'))
+    # print(format(contoh.frames[0][0,2,1], '08b'))
+    # print()
+    # print(format(contoh.frames[0][0,2,2], '08b'))
+    # print(format(contoh.frames[0][0,3,0], '08b'))
+    # print(format(contoh.frames[0][0,3,1], '08b'))
+    # print(format(contoh.frames[0][0,3,2], '08b'))
+    # print(format(contoh.frames[0][0,4,0], '08b'))
+    # print(format(contoh.frames[0][0,4,1], '08b'))
+    # print(format(contoh.frames[0][0,4,2], '08b'))
+    # print(format(contoh.frames[0][0,5,0], '08b'))
+    # print()
+    # print(format(contoh.frames[0][0,5,1], '08b'))
+    # print(format(contoh.frames[0][0,5,2], '08b'))
+    # print(format(contoh.frames[0][0,6,0], '08b'))
+    # print(format(contoh.frames[0][0,6,1], '08b'))
+    # print(format(contoh.frames[0][0,6,2], '08b'))
+    # print(format(contoh.frames[0][0,7,0], '08b'))
+    # print(format(contoh.frames[0][0,7,1], '08b'))
+    # print(format(contoh.frames[0][0,7,2], '08b'))
+    # contoh.extract()
