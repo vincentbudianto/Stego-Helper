@@ -42,7 +42,7 @@ Program steganografi yang dibuat dapat memproses media file gambar, video, maupu
   program dapat menyisipkan pesan secara acak untuk byte dari pesan, pada image dapat dilakukan random pada penyisipan dari posisi pixel, dan pada video juga dapat dilakukan random pada penyisipan dari posisi frame
 
 ### Opsi Aplikasi Steganografi 
-- __Image (LSB)__
+- __Image (LSB)__ <br>
   Steganografi melalui media gambar dengan metode LSB.
     - Acceptable file : .bmp, .png
     - Parameter input
@@ -50,7 +50,7 @@ Program steganografi yang dibuat dapat memproses media file gambar, video, maupu
       - encryption : status enkripsi untuk file message
       - random pixel : metode pengacakan untuk penyisipan bit pada pixel gambar
 
-- __Image (BPCS)__
+- __Image (BPCS)__ <br>
   Steganografi melalui media gambar dengan metode LSB.
     - Acceptable file : .bmp, .png
     - Parameter input
@@ -59,7 +59,7 @@ Program steganografi yang dibuat dapat memproses media file gambar, video, maupu
       - encryption : status enkripsi untuk file message
       - random pixel : metode pengacakan untuk penyisipan bit pada pixel bitplane
 
-- __Video__
+- __Video__ <br>
   Steganografi melalui media gambar dengan metode LSB.
     - Acceptable file : .avi
     - Parameter input  
@@ -68,7 +68,7 @@ Program steganografi yang dibuat dapat memproses media file gambar, video, maupu
       - random frame : metode pengacakan untuk penyisipan bit pada frame video
       - random pixel : metode pengacakan untuk penyisipan bit pada pixel video
 
-- __Audio__
+- __Audio__ <br>
   Steganografi melalui media gambar dengan metode LSB.
     - Acceptable file : 'wav', '-wav', 'x-wav'
     - Parameter input  
