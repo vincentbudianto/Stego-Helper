@@ -274,7 +274,7 @@ class AviStegano():
 
         return output_filename
 
-    def extract(self, filename_message_output = 'default'):
+    def extract(self, filename_message_output = ''):
         key = self.lineEdit.text()
 
         encription = self.read_bits(8)
@@ -317,7 +317,14 @@ class AviStegano():
 
         filepath = filename.decode()
         original_filename = filepath.split('/')[-1]
-        filename = filename_message_output + '.' + original_filename.split('.')[-1]
+        
+        if filename_message_output == '':
+            video_path = self.aviVideo.filename.split('/')
+            filename =  '/'.join(video_path[:-1]) + '/' + original_filename
+        else:
+            filename = filename_message_output + '.' + original_filename.split('.')[-1]
+
+        print(filename)
 
         with open(filename, "wb") as f:
             f.write(result)
