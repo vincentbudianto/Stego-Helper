@@ -6,11 +6,14 @@ import random
 from cv2 import cv2
 from vigenere import Vigenere
 
+from main import Ui_MainWindow
+from PyQt5 import QtCore, QtWidgets
+
 FLAG_TRUE = 22
 FLAG_FALSE = 11
 TOTAL_FLAG_BITS = 24
 
-class AviVideo:
+class AviVideo():
     def __init__(self):
         self.filename = ''
         self.frames = []
@@ -338,6 +341,59 @@ class AviStegano():
         psnr = 20 * math.log10(max_pixel / math.sqrt(mse))
 
         return psnr
+    
+    def render(self, window: Ui_MainWindow):
+        self.horizontalLayout = QtWidgets.QHBoxLayout(window.option_frame)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.widget_3 = QtWidgets.QWidget(window.option_frame)
+        self.widget_3.setObjectName("widget_3")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.widget_3)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.widget = QtWidgets.QWidget(self.widget_3)
+        self.widget.setObjectName("widget")
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.widget)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.groupBox = QtWidgets.QGroupBox(self.widget)
+        self.groupBox.setObjectName("groupBox")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.groupBox)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.checkBox = QtWidgets.QCheckBox(self.groupBox)
+        self.checkBox.setObjectName("checkBox")
+        self.verticalLayout_2.addWidget(self.checkBox)
+        self.horizontalLayout_5.addWidget(self.groupBox)
+        self.groupBox_3 = QtWidgets.QGroupBox(self.widget)
+        self.groupBox_3.setObjectName("groupBox_3")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.groupBox_3)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.checkBox_3 = QtWidgets.QCheckBox(self.groupBox_3)
+        self.checkBox_3.setObjectName("checkBox_3")
+        self.verticalLayout_4.addWidget(self.checkBox_3)
+        self.checkBox_2 = QtWidgets.QCheckBox(self.groupBox_3)
+        self.checkBox_2.setObjectName("checkBox_2")
+        self.verticalLayout_4.addWidget(self.checkBox_2)
+        self.horizontalLayout_5.addWidget(self.groupBox_3)
+        self.verticalLayout_6.addWidget(self.widget)
+        self.groupBox_4 = QtWidgets.QGroupBox(self.widget_3)
+        self.groupBox_4.setObjectName("groupBox_4")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_4)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.lineEdit = QtWidgets.QLineEdit(self.groupBox_4)
+        self.lineEdit.setObjectName("lineEdit")
+        self.horizontalLayout_2.addWidget(self.lineEdit)
+        self.verticalLayout_6.addWidget(self.groupBox_4)
+        self.horizontalLayout.addWidget(self.widget_3)
+
+        self.retranslateUi(Form)
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.groupBox.setTitle(_translate("MainWindow", "Encryption"))
+        self.checkBox.setText(_translate("MainWindow", "Enable"))
+        self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
+        self.checkBox_3.setText(_translate("MainWindow", "Randomized Frame"))
+        self.checkBox_2.setText(_translate("MainWindow", "Randomized Pixel"))
+        self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
+
 
 if __name__ == "__main__":
     # Embeed
