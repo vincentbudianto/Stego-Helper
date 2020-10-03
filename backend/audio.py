@@ -191,6 +191,9 @@ class Audio():
         if output_file_name == None:
             output_file_name = filename.decode()
             output_file_name = str(Path(self.container_file_path).parent) + '/' + output_file_name
+        else:
+            splitted_decoded = filename.decode().split('.')
+            output_file_name = output_file_name + '.' + splitted_decoded[1]
 
         output_file_path = output_file_name
         save_file(output_file_path, content)
