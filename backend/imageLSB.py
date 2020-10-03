@@ -147,9 +147,11 @@ class imageLSB():
 
         if (output == None):
             output = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
+            print('output', output)
             self.writeImage(output)
         else:
-            output += old_filename[1]
+            output += '.' + old_filename[1]
+            print('output', output)
             self.writeImage(output)
 
         return output
