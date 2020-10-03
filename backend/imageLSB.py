@@ -26,7 +26,7 @@ class imageLSB():
             self.map = list(range(self.size))
         except Exception as exception:
             print(exception)
-            print("Error while reading image file")
+            print('Error while reading image file')
 
     def writeImage(self, filename):
         cv2.imwrite(filename, self.image)
@@ -87,10 +87,10 @@ class imageLSB():
             self.image[x, y] = tuple(val)
             self.next_pos()
 
-    def embed(self, path, key, encrypted = False, randomized = False):
+    def embed(self, path, key, output = '', encrypted = False, randomized = False):
         filename = path.split('/')[-1]
         filedata = len(filename)
-        content = open(path, "rb").read()
+        content = open(path, 'rb').read()
         data = len(content)
 
         if ((not randomized) and ((self.width * self.height * self.channels) < (filedata + data + 96))):
@@ -128,9 +128,14 @@ class imageLSB():
         for byte in content:
             self.put_value(format(int(byte), '08b'))
 
-        return self.image
+        if (output == ''):
+            self.writeImage('result/image/embed_' + filename)
+        else:
+            self.writeImage(output)
 
-    def extract(self, key):
+        return output
+
+    def extract(self, key, output = ''):
         encrypted = self.read_bits(8)
         randomized = self.read_bits(8)
         seed = sum(ord(k) for k in key)
@@ -157,14 +162,22 @@ class imageLSB():
 
         filename = filename.decode()
 
-        with open('result/image/' + filename, "wb") as f:
-            f.write(content)
+        if (output == ''):
+            with open(('result/image/extracted_' + filename), 'wb') as f:
+                f.write(content)
 
-        if (encrypted == 22):
-            vig = Vigenere(key)
-            vig.decryptFile('result/image/' + filename, ('result/image/decrypted_' + filename))
+            if (encrypted == 22):
+                vig = Vigenere(key)
+                vig.decryptFile(('result/image/extracted_' + filename), ('result/image/extracted_' + filename))
+        else:
+            with open(output, 'wb') as f:
+                f.write(content)
 
-        return filename, content
+            if (encrypted == 22):
+                vig = Vigenere(key)
+                vig.decryptFile(output, output)
+
+        return output
 
     @staticmethod
     def psnr(image_one, image_two):
@@ -181,27 +194,21 @@ class imageLSB():
 if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
     lsbe = imageLSB()
-    lsbe.readImage('image/input.png')
+    lsbe.readImage('test/image/input.png')
 
-    res_encode = lsbe.embed(path = 'image/secret.txt', key = 'STEGANOGRAPHY', encrypted = False, randomized = False)
-    # res_encode = lsbe.embed(path = 'image/mask.png', key = 'STEGANOGRAPHY', encrypted = False, randomized = False)
-    print('  embed shape :', res_encode.shape)
-    lsbe.writeImage('result/image/resLSB.png')
+    res_encode = lsbe.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png', encrypted = False, randomized = False)
+    # res_encode = lsbe.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png', encrypted = False, randomized = False)
 
     print('<<<<< extract >>>>>>')
     lsbd = imageLSB()
     lsbd.readImage('result/image/resLSB.png')
 
-    filename, content = lsbd.extract(key = 'STEGANOGRAPHY')
+    filename = lsbd.extract(key = 'STEGANOGRAPHY', output = 'result/image/secret.txt')
 
     print('extract filename :', filename)
-    print(' extract content :', len(content))
-
-    # with open(filename, "wb") as f:
-    # 	f.write(content)
 
     print('<<<<< psnr >>>>>>')
     lsb = imageLSB()
-    image_one = cv2.imread('image/input.png')
+    image_one = cv2.imread('test/image/input.png')
     image_two = cv2.imread('result/image/resLSB.png')
     print('psnr :', lsb.psnr(image_one, image_two))
