@@ -274,7 +274,7 @@ class AviStegano():
 
         return output_filename
 
-    def extract(self, filename_message_output = ''):
+    def extract(self, filename_message_output = 'default'):
         key = self.lineEdit.text()
 
         encription = self.read_bits(8)
@@ -315,10 +315,9 @@ class AviStegano():
         for byte in range(data):
             result.extend([self.read_bits(8)])
 
-        if (filename_message_output == ''):
-            filename = filename.decode()
-        else:
-            filename = filename_message_output
+        filepath = filename.decode()
+        original_filename = filepath.split('/')[-1]
+        filename = filename_message_output + '.' + original_filename.split('.')[-1]
 
         with open(filename, "wb") as f:
             f.write(result)

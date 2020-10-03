@@ -179,7 +179,7 @@ class Ui_MainWindow(object):
     def openMediaFile(self):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
             None,
-            "Select Input File",
+            "Select Media File",
             "",
             "All Files (*)",
         )
@@ -236,7 +236,7 @@ class Ui_MainWindow(object):
                 self.appendInfoText("Error when reading input file")
                 return -1
 
-        if self.stego[0] == 'Image LSB':
+        elif self.stego[0] == 'Image LSB':
             if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
                 self.info_text.setPlainText("Container file extension has to be .bmp or .png")
                 return -1
@@ -276,7 +276,7 @@ class Ui_MainWindow(object):
                 self.appendInfoText("Error when reading input file")
                 return -1
 
-        if self.stego[0] == 'Image BPCS':
+        elif self.stego[0] == 'Image BPCS':
             if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
                 self.info_text.setPlainText("Container file extension has to be .bmp or .png")
                 return -1
@@ -312,6 +312,54 @@ class Ui_MainWindow(object):
                     self.result_file_path = result
                     self.appendInfoText("Counting PSNR")
                     self.appendInfoText("PSNR = " + str(self.stego[1].psnr(self.file_name, self.result_file_path)))
+            else:
+                self.appendInfoText("Error when reading input file")
+                return -1
+
+        elif self.stego[0] == 'Video':
+            print("IN")
+            if self.file_type != 'video' or self.file_extension not in ['avi', 'x-msvideo']:
+                self.info_text.setPlainText("Container file extension has to be .avi")
+                return -1
+            
+            #Reading Video File
+            self.appendInfoText("Reading Video File")
+            self.stego[1].readVideo(self.file_name)
+
+            input_message_filename, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None,
+                "Select Message File",
+                "",
+                "All Files (*)",
+            )
+            if input_message_filename:
+                print(input_message_filename)
+                output_filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    None,
+                    "Insert name to save file",
+                    ".avi",
+                    "All Files (*)",
+                )
+
+                self.appendInfoText("Embedding...")
+                
+                if output_filename:
+                    output_name = output_filename.split('/')
+                    if output_name[-1] == '' or output_name[-1] == '.avi':
+                        output_name[-1] = 'embed_' + (self.file_name).split('/')[-1]
+                        output_filename = '/'.join(output_name)
+                else:
+                    output_filename = 'embed_' + (self.file_name).split('/')[-1]
+
+                print(output_filename)
+                result = self.stego[1].embeed(input_message_filename, output_filename)
+
+                if result == 'FAILED':
+                    self.appendInfoText("Container file size is too small")
+                else:
+                    self.result_file_path = result
+                    self.appendInfoText("Counting PSNR")
+                    self.appendInfoText("PSNR = " + str(self.stego[1].psnr()))
             else:
                 self.appendInfoText("Error when reading input file")
                 return -1
@@ -343,7 +391,7 @@ class Ui_MainWindow(object):
             self.result_file_path = result
             self.appendInfoText("Finished extracting in " + result)
 
-        if self.stego[0] == 'Image LSB':
+        elif self.stego[0] == 'Image LSB':
             if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
                 self.info_text.setPlainText("Container file extension has to be .bmp or .png")
                 return -1
@@ -369,7 +417,7 @@ class Ui_MainWindow(object):
             self.result_file_path = result
             self.appendInfoText("Finished extracting in " + result)
 
-        if self.stego[0] == 'Image BPCS':
+        elif self.stego[0] == 'Image BPCS':
             if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
                 self.info_text.setPlainText("Container file extension has to be .bmp or .png")
                 return -1
@@ -389,6 +437,32 @@ class Ui_MainWindow(object):
             self.appendInfoText("Extracting")
             if fileName:
                 result = self.stego[1].extract(output = fileName)
+            else:
+                result = self.stego[1].extract()
+
+            self.result_file_path = result
+            self.appendInfoText("Finished extracting in " + result)
+
+        elif self.stego[0] == 'Video':
+            if self.file_type != 'video' or self.file_extension not in ['avi', 'x-msvideo']:
+                self.info_text.setPlainText("Container file extension has to be .avi")
+                return -1
+
+            self.info_text.setPlainText("Start Extraction Process")
+            self.stego[1].readVideo(self.file_name)
+            self.appendInfoText("Container file read")
+
+            output_message_filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                None,
+                "Select File to Save Output File",
+                "",
+                "All Files (*)",
+            )
+
+            result = 'FAILED'
+            self.appendInfoText("Extracting")
+            if output_message_filename:
+                result = self.stego[1].extract(output_message_filename)
             else:
                 result = self.stego[1].extract()
 
