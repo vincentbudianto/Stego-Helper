@@ -194,7 +194,10 @@ class imageLSB():
 
     @staticmethod
     def psnr(image_one, image_two):
-        mse = np.mean((image_one - image_two) ** 2)
+        real = cv2.imread(image_one)
+        embedded = cv2.imread(image_two)
+
+        mse = np.mean((real - embedded) ** 2)
 
         if (mse == 0):
             return 100
@@ -264,10 +267,10 @@ if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
     lsbe = imageLSB()
     lsbe.readImage('test/image/input.png')
-    res_encode = lsbe.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png')
+    res_encode = lsbe.embed(path = 'test/image/test.txt', output = 'result/image/resLSB.png')
     # lsbe.readImage('test/image/input.bmp')
-    # res_encode = lsbe.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.bmp')
-    # res_encode = lsbe.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.bmp')
+    # res_encode = lsbe.embed(path = 'test/image/test.txt', output = 'result/image/resLSB.bmp')
+    # res_encode = lsbe.embed(path = 'test/image/mask.png', output = 'result/image/resLSB.bmp')
     print('embed filename :', res_encode)
 
     print('<<<<< extract >>>>>>')
@@ -275,7 +278,7 @@ if __name__ == '__main__':
     lsbd.readImage('result/image/resLSB.png')
     # lsbd.readImage('result/image/resLSB.bmp')
 
-    res_decode = lsbd.extract(key = 'STEGANOGRAPHY', output = 'result/image/test.txt')
+    res_decode = lsbd.extract(output = 'result/image/test.txt')
     print('extract filename :', res_decode)
 
     print('<<<<< psnr >>>>>>')

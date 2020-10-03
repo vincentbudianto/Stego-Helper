@@ -5,7 +5,6 @@ import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_MainWindow(object):
     def __init__(self):
         self.stego_list = [
@@ -62,7 +61,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
 
         # INSERT OPTIONS #
-        
+
         self.verticalLayout_5.addWidget(self.option_frame)
         self.footer_frame = QtWidgets.QFrame(self.centralwidget)
         self.footer_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -156,7 +155,7 @@ class Ui_MainWindow(object):
             self.info_text.setPlainText("Initial file is still empty")
         else:
             os.startfile(self.file_name)
-    
+
     def open_result_file(self):
         if self.result_file_path == "":
             self.info_text.setPlainText("Result file is still empty")
@@ -171,7 +170,7 @@ class Ui_MainWindow(object):
                 widget.close()
             else:
                 self.clean(item.layout())
-    
+
     def change_stego(self, idx:int):
         self.clean(self.horizontalLayout_4)
         self.stego = self.stego_list[idx]
@@ -192,13 +191,13 @@ class Ui_MainWindow(object):
                 print(mime)
                 self.file_type = mime[0].split('/')[0]
                 self.file_extension = mime[0].split('/')[1]
-    
+
     def embedding(self):
         if self.stego[0] == 'Audio':
             if self.file_type != 'audio' or self.file_extension not in ['wav', '-wav', 'x-wav']:
                 self.info_text.setPlainText("Container file extension has to be .wav or .x-wav")
                 return -1
-            
+
             inputFileName, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None,
                 "Select Input File",
@@ -225,13 +224,95 @@ class Ui_MainWindow(object):
                     result = self.stego[1].embedding(fileName)
                 else:
                     result = self.stego[1].embedding(None)
-                
+
                 if result == 'FAILED':
                     self.appendInfoText("Container file size is too small")
                 else:
                     self.result_file_path = result
                     self.appendInfoText("Counting PSNR")
                     self.appendInfoText("PSNR = " + str(self.stego[1].audio_psnr(self.file_name, self.result_file_path)))
+            else:
+                self.appendInfoText("Error when reading input file")
+                return -1
+            
+        if self.stego[0] == 'Image LSB':
+            if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
+                self.info_text.setPlainText("Container file extension has to be bmp or png")
+                return -1
+
+            inputFileName, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None,
+                "Select Input File",
+                "",
+                "All Files (*)",
+            )
+            if inputFileName:
+                self.stego[1].read_container_file(self.file_name)
+                self.appendInfoText("Container file read")
+                self.stego[1].read_input_file(inputFileName)
+                self.appendInfoText("Input file read")
+
+                fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    None,
+                    "Select File to Save Output Text",
+                    "",
+                    "All Files (*)",
+                )
+                result = 'FAILED'
+
+                self.appendInfoText("Embedding")
+                if fileName:
+                    result = self.stego[1].embed(path = self.file_name, output = fileName)
+                else:
+                    result = self.stego[1].embed(path = self.file_name)
+
+                if result == 'FAILED':
+                    self.appendInfoText("Container file size is too small")
+                else:
+                    self.result_file_path = result
+                    self.appendInfoText("Counting PSNR")
+                    self.appendInfoText("PSNR = " + str(self.stego[1].psnr(self.file_name, self.result_file_path)))
+            else:
+                self.appendInfoText("Error when reading input file")
+                return -1
+
+        if self.stego[0] == 'Image BPCS':
+            if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
+                self.info_text.setPlainText("Container file extension has to be bmp or png")
+                return -1
+
+            inputFileName, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None,
+                "Select Input File",
+                "",
+                "All Files (*)",
+            )
+            if inputFileName:
+                self.stego[1].read_container_file(self.file_name)
+                self.appendInfoText("Container file read")
+                self.stego[1].read_input_file(inputFileName)
+                self.appendInfoText("Input file read")
+
+                fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    None,
+                    "Select File to Save Output Text",
+                    "",
+                    "All Files (*)",
+                )
+                result = 'FAILED'
+
+                self.appendInfoText("Embedding")
+                if fileName:
+                    result = self.stego[1].embed(path = self.file_name, output = fileName)
+                else:
+                    result = self.stego[1].embed(path = self.file_name)
+
+                if result == 'FAILED':
+                    self.appendInfoText("Container file size is too small")
+                else:
+                    self.result_file_path = result
+                    self.appendInfoText("Counting PSNR")
+                    self.appendInfoText("PSNR = " + str(self.stego[1].psnr(self.file_name, self.result_file_path)))
             else:
                 self.appendInfoText("Error when reading input file")
                 return -1
@@ -263,11 +344,10 @@ class Ui_MainWindow(object):
             self.result_file_path = result
             self.appendInfoText("Finished extracting in " + result)
 
-    
+
+
     def appendInfoText(self, text):
         self.info_text.appendPlainText(text)
-            
-
 
 if __name__ == "__main__":
     import sys
