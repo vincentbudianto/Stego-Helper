@@ -10,6 +10,7 @@
 # from imageLSB import imageLSB
 # from aviVideo import AviVideo
 # from audio import Audio, audio_psnr
+import mimetypes
 
 from backend import *
 
@@ -133,6 +134,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.open_media_button.clicked.connect(self.openMediaFile)
         self.choose_stego_dropdown.currentIndexChanged.connect(self.change_stego)
 
         self.stego.render(self)
@@ -165,6 +167,16 @@ class Ui_MainWindow(object):
         self.clean(self.horizontalLayout_4)
         self.stego = self.stego_list[idx]
         self.stego.render(self)
+
+    def openMediaFile(self):
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
+            None,
+            "Select Input File",
+            "",
+            "All Files (*)",
+        )
+        if fileName:
+            print(fileName)
 
 if __name__ == "__main__":
     import sys
