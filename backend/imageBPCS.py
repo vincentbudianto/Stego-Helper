@@ -84,7 +84,7 @@ class imageBPCS():
 
         message = msg.set_message()
 
-        if (((self.width // self.block_size) * (self.height // self.block_size) * self.channels * 8) < len(message)):
+        if (((self.width // self.block_size) * (self.height // self.block_size) * self.channels) < len(message)):
             return 'FAILED'
 
         i = 0
