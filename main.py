@@ -8,13 +8,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def __init__(self):
-        self.stego = imageLSB()
         self.stego_list = [
-            imageLSB(),
-            imageBPCS(),
-            AviStegano(),
-            Audio()
+            ("Image LSB", imageLSB()),
+            ("Image BPCS", imageBPCS()),
+            ("Video", AviStegano()),
+            ("Audio", Audio())
         ]
+        self.stego = self.stego_list[0]
         self.file_name = ''
         self.file_type = ''
         self.file_extension = ''
@@ -132,8 +132,9 @@ class Ui_MainWindow(object):
         self.choose_stego_dropdown.currentIndexChanged.connect(self.change_stego)
         self.open_initial_button.clicked.connect(self.open_initial_file)
         self.open_result_button.clicked.connect(self.open_result_file)
+        self.embeed_button.clicked.connect(self.embedding)
 
-        self.stego.render(self)
+        self.stego[1].render(self)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -161,7 +162,6 @@ class Ui_MainWindow(object):
             self.info_text.setPlainText("Result file is still empty")
         else:
             os.startfile(self.result_file_path)
-    
 
     def clean(self, layout):
         for i in reversed(range(layout.count())):
@@ -175,7 +175,7 @@ class Ui_MainWindow(object):
     def change_stego(self, idx:int):
         self.clean(self.horizontalLayout_4)
         self.stego = self.stego_list[idx]
-        self.stego.render(self)
+        self.stego[1].render(self)
 
     def openMediaFile(self):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -192,6 +192,54 @@ class Ui_MainWindow(object):
                 print(mime)
                 self.file_type = mime[0].split('/')[0]
                 self.file_extension = mime[0].split('/')[1]
+    
+    def embedding(self):
+        if self.stego[0] == 'Audio':
+            print("IN")
+            if self.file_type != 'audio' or self.file_extension not in ['wav', '-wav', 'x-wav']:
+                self.info_text.setPlainText("Container file extension has to be .wav or .x-wav")
+                return -1
+            
+            inputFileName, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None,
+                "Select Input File",
+                "",
+                "All Files (*)",
+            )
+            if inputFileName:
+                self.stego[1].read_container_file(self.file_name)
+                self.appendInfoText("Container file read")
+                self.stego[1].read_input_file(inputFileName)
+                self.appendInfoText("Input file read")
+
+                fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    None,
+                    "Select File to Save Output Text",
+                    "",
+                    "All Files (*)",
+                )
+                result = 'FAILED'
+
+                self.appendInfoText("Embedding")
+                if fileName:
+                    result = self.stego[1].embedding(fileName)
+                else:
+                    result = self.stego[1].embedding(None)
+                
+                if result == 'FAILED':
+                    self.appendInfoText("Container file size is too small")
+                else:
+                    self.result_file_path = result
+            else:
+                self.appendInfoText("Error when reading input file")
+                return -1
+    
+    def appendInfoText(self, text):
+        if self.info_text.toPlainText() != "":
+            self.info_text.appendPlainText("\n")
+        self.info_text.appendPlainText(text)
+            
+
 
 if __name__ == "__main__":
     import sys

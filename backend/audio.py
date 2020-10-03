@@ -99,7 +99,7 @@ class Audio():
 
         # Limiting LSB into last 2 bits
         if self.container_file_length < 4 * (152 + inputfilename_size + inputfile_size):
-            return 'FAIL'
+            return 'FAILED'
 
         if self.is_encrypted:
             print("Encrypting")
@@ -140,12 +140,14 @@ class Audio():
 
         ### WRITE FILES ###
         print("Writing output")
-        output_file_path = str(Path(self.container_file_path).parent) + "/" + output_file_name
+        output_file_path = output_file_name
         self.encrypted_file_path = output_file_path
         with wave.open(output_file_path, 'wb') as wav_file:
             wav_file.setparams(self.container_file_params)
             wav_file.writeframes(self.container_file_bytes)
             wav_file.close()
+        
+        return output_file_path
 
     def extract(self, output_file_name=None):
         self.key = self.lineEdit.text()
@@ -186,13 +188,15 @@ class Audio():
         if output_file_name == None:
             output_file_name = filename.decode()
 
-        output_file_path = str(Path(self.container_file_path).parent) + "/" + output_file_name
+        output_file_path = output_file_name
         save_file(output_file_path, content)
 
         if (is_encrypted == 22):
             print("Decrypting")
             vig = Vigenere(self.key)
             vig.decryptFile(output_file_path, output_file_path)
+        
+        return output_file_path
     
     # UI
     def render(self, window: Ui_MainWindow):
