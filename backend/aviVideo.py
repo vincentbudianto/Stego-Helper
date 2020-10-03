@@ -412,7 +412,7 @@ class AviStegano():
     def enable_randomized_pixel(self, state):
         self.randomized_pixel = bool(state)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # Embeed
     # example = AviStegano()
     # example.readVideo('test/video/result2.avi')

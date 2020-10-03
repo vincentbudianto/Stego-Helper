@@ -264,30 +264,31 @@ class Audio():
     def enable_randomized(self, state):
         self.is_randomized = bool(state)
 
-def audio_psnr(original_file, embedded_file):
-    file_original = wave.open(original_file, 'rb')
-    file_original_bytes = file_original.readframes(file_original.getnframes())
-    file_original.close()
+    @staticmethod
+    def audio_psnr(original_file, embedded_file):
+        file_original = wave.open(original_file, 'rb')
+        file_original_bytes = file_original.readframes(file_original.getnframes())
+        file_original.close()
 
-    file_embedded = wave.open(embedded_file, 'rb')
-    file_embedded_bytes = file_embedded.readframes(file_embedded.getnframes())
-    file_embedded.close()
+        file_embedded = wave.open(embedded_file, 'rb')
+        file_embedded_bytes = file_embedded.readframes(file_embedded.getnframes())
+        file_embedded.close()
 
-    original_bytes_int = []
-    embedded_bytes_int = []
-    for i in range(1000, len(file_original_bytes)):
-        original_bytes_int.append(int(file_original_bytes[i]))
-        embedded_bytes_int.append(int(file_embedded_bytes[i]))
+        original_bytes_int = []
+        embedded_bytes_int = []
+        for i in range(1000, len(file_original_bytes)):
+            original_bytes_int.append(int(file_original_bytes[i]))
+            embedded_bytes_int.append(int(file_embedded_bytes[i]))
 
-    # print(original_bytes_int)
-    original_bytes_int = np.array(original_bytes_int)
-    embedded_bytes_int = np.array(embedded_bytes_int)
+        # print(original_bytes_int)
+        original_bytes_int = np.array(original_bytes_int)
+        embedded_bytes_int = np.array(embedded_bytes_int)
 
-    delta = np.sum(pow((original_bytes_int - embedded_bytes_int),2))
-    mse = delta / len(file_original_bytes)
+        delta = np.sum(pow((original_bytes_int - embedded_bytes_int),2))
+        mse = delta / len(file_original_bytes)
 
-    psnr = 20 * math.log10(255 / math.sqrt(mse))
-    return psnr
+        psnr = 20 * math.log10(255 / math.sqrt(mse))
+        return psnr
 
 
 if __name__ == "__main__":

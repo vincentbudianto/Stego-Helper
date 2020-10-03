@@ -18,7 +18,6 @@ class Ui_MainWindow(object):
         self.file_name = ''
         self.file_type = ''
         self.file_extension = ''
-        self.initial_file_path = ''
         self.result_file_path = ''
 
     def setupUi(self, MainWindow):
@@ -152,10 +151,10 @@ class Ui_MainWindow(object):
         self.menuStegonya_Meyer.setTitle(_translate("MainWindow", "Stegonya Meyer"))
 
     def open_initial_file(self):
-        if self.initial_file_path == "":
+        if self.file_name == "":
             self.info_text.setPlainText("Initial file is still empty")
         else:
-            os.startfile(self.initial_file_path)
+            os.startfile(self.file_name)
     
     def open_result_file(self):
         if self.result_file_path == "":
@@ -230,13 +229,13 @@ class Ui_MainWindow(object):
                     self.appendInfoText("Container file size is too small")
                 else:
                     self.result_file_path = result
+                    self.appendInfoText("Counting PSNR")
+                    self.appendInfoText("PSNR = " + str(self.stego[1].audio_psnr(self.file_name, self.result_file_path)))
             else:
                 self.appendInfoText("Error when reading input file")
                 return -1
     
     def appendInfoText(self, text):
-        if self.info_text.toPlainText() != "":
-            self.info_text.appendPlainText("\n")
         self.info_text.appendPlainText(text)
             
 
