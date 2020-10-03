@@ -26,6 +26,9 @@ class Ui_MainWindow(object):
             AviStegano(),
             Audio()
         ]
+        self.file_name = ''
+        self.file_type = ''
+        self.file_extension = ''
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -177,6 +180,12 @@ class Ui_MainWindow(object):
         )
         if fileName:
             print(fileName)
+            self.file_name = fileName
+            mime = mimetypes.guess_type(fileName)
+            if mime[0]:
+                print(mime)
+                self.file_type = mime[0].split('/')[0]
+                self.file_extension = mime[0].split('/')[1]
 
 if __name__ == "__main__":
     import sys
