@@ -265,29 +265,28 @@ class messageBPCS():
 
         self.bitplane += self.int_bitplane(len(self.header_bitplane))
         self.bitplane += self.int_bitplane(len(self.content_bitplane))
+
         self.bitplane += self.header_bitplane
         self.bitplane += self.content_bitplane
 
-        cmap = self.conjugation_mapping()
-        cbitplane = self.int_bitplane(len(cmap))
-        cbitplane += cmap
-
-        self.bitplane = cbitplane + self.bitplane
+        conjugation_bitplane = self.conjugation_mapping()
+        self.bitplane += self.int_bitplane(len(conjugation_bitplane))
+        self.bitplane += conjugation_bitplane
 
         return self.bitplane
 
     def get_message(self, bitplane):
-        cmap_length = self.get_int(bitplane.pop(0))
-
-        for i in range(cmap_length):
-            self.conjugation_map.append(bitplane.pop(0))
-
         header_length = self.get_int(bitplane.pop(0))
         content_length = self.get_int(bitplane.pop(0))
         temp = []
 
-        for j in range(header_length + content_length):
+        for i in range(header_length + content_length):
             temp.append(bitplane.pop(0))
+
+        cmap_length = self.get_int(bitplane.pop(0))
+
+        for j in range(cmap_length):
+            self.conjugation_map.append(bitplane.pop(0))
 
         temp = self.unconjugate_content(temp)
 
@@ -304,8 +303,8 @@ class messageBPCS():
 
 if __name__ == '__main__':
     print('<<<<< message to bitplane >>>>>>')
-    path = 'image/test.txt'
-    # path = 'image/mask.png'
+    path = 'test/image/test.txt'
+    # path = 'test/image/mask.png'
     name = path.split('/')[-1]
     contents = open(path, 'rb').read()
     smsg = messageBPCS(filename = name, content = contents, key = 'STEGANOGRAPHY', randomized = False, encrypted = False)

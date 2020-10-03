@@ -95,7 +95,8 @@ class imageLSB():
             self.image[x, y] = tuple(val)
             self.next_pos()
 
-    def embed(self, path, key, output = ''):
+    def embed(self, path, output = ''):
+        key = self.key_input_text.text()
         filename = path.split('/')[-1]
         filedata = len(filename)
         content = open(path, 'rb').read()
@@ -145,7 +146,9 @@ class imageLSB():
 
         return output
 
-    def extract(self, key, output = ''):
+    def extract(self, output = ''):
+        key = self.key_input_text.text()
+
         encrypted = self.read_bits(8)
         randomized = self.read_bits(8)
         seed = sum(ord(k) for k in key)
@@ -261,19 +264,19 @@ if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
     lsbe = imageLSB()
     lsbe.readImage('test/image/input.png')
-    res_encode = lsbe.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png', encrypted = False, randomized = False)
+    res_encode = lsbe.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png')
     # lsbe.readImage('test/image/input.bmp')
-    # res_encode = lsbe.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.bmp', encrypted = False, randomized = False)
-    # res_encode = lsbe.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.bmp', encrypted = False, randomized = False)
+    # res_encode = lsbe.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.bmp')
+    # res_encode = lsbe.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.bmp')
+    print('embed filename :', res_encode)
 
     print('<<<<< extract >>>>>>')
     lsbd = imageLSB()
     lsbd.readImage('result/image/resLSB.png')
     # lsbd.readImage('result/image/resLSB.bmp')
 
-    filename = lsbd.extract(key = 'STEGANOGRAPHY', output = 'result/image/test.txt')
-
-    print('extract filename :', filename)
+    res_decode = lsbd.extract(key = 'STEGANOGRAPHY', output = 'result/image/test.txt')
+    print('extract filename :', res_decode)
 
     print('<<<<< psnr >>>>>>')
     lsb = imageLSB()
