@@ -4,6 +4,8 @@ import numpy as np
 import random
 
 from .vigenere import Vigenere
+from pathlib import Path
+import ntpath
 
 from main import Ui_MainWindow
 from PyQt5 import QtCore, QtWidgets
@@ -26,6 +28,8 @@ class imageLSB():
         try:
             image = cv2.imread(filename)
 
+            self.path = filename
+
             self.image = image
             self.height, self.width, self.channels = image.shape
             self.size = self.width * self.height
@@ -33,7 +37,7 @@ class imageLSB():
         except Exception as exception:
             # print(exception)
             # print('Error while reading image file')
-            return 'FAILED - Error while reading image file'
+            return 'FAILED'
 
     def writeImage(self, filename):
         cv2.imwrite(filename, self.image)
@@ -53,7 +57,7 @@ class imageLSB():
 
                 if (self.mask_or == 2):
                     raise Exception('No available pixels remaining')
-                    return 'FAILED - No available pixels remaining'
+                    return 'FAILED'
                 else:
                     self.mask_or = self.mask_one.pop(0)
                     self.mask_and = self.mask_zero.pop(0)
@@ -95,7 +99,7 @@ class imageLSB():
             self.image[x, y] = tuple(val)
             self.next_pos()
 
-    def embed(self, path, output = ''):
+    def embed(self, path, output = None):
         key = self.key_input_text.text()
         filename = path.split('/')[-1]
         filedata = len(filename)
@@ -104,10 +108,10 @@ class imageLSB():
 
         if ((not self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 96)))):
             # raise Exception('Image is smaller than payload')
-            return 'FAILED - Image is smaller than payload'
+            return 'FAILED'
         elif ((self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 128)))):
             # raise Exception('Image is smaller than payload')
-            return 'FAILED - Image is smaller than payload'
+            return 'FAILED'
 
         if (self.encrypted):
             vig = Vigenere(key)
@@ -139,14 +143,16 @@ class imageLSB():
         for byte in content:
             self.put_value(format(int(byte), '08b'))
 
-        if (output == ''):
+        if (output == None):
+            old_filename = ntpath.basename(self.path).split('.')
+            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
             self.writeImage('result/image/embed_' + filename)
         else:
             self.writeImage(output)
 
         return output
 
-    def extract(self, output = ''):
+    def extract(self, output = None):
         key = self.key_input_text.text()
 
         encrypted = self.read_bits(8)
@@ -174,15 +180,20 @@ class imageLSB():
             content.extend([self.read_bits(8)])
 
         filename = filename.decode()
+        old_filename = filename.split('.')
 
-        if (output == ''):
-            with open(('result/image/extracted_' + filename), 'wb') as f:
+        if (output == None):
+            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
+
+            with open(filename, 'wb') as f:
                 f.write(content)
 
             if (encrypted == 22):
                 vig = Vigenere(key)
-                vig.decryptFile(('result/image/extracted_' + filename), ('result/image/extracted_' + filename))
+                vig.decryptFile(filename, filename)
         else:
+            output += '.' + old_filename[1]
+
             with open(output, 'wb') as f:
                 f.write(content)
 

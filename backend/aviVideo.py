@@ -253,7 +253,7 @@ class AviStegano():
                 random.shuffle(self.map)
 
         if (self.randomized_frame or self.randomized_pixel):
-            if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < (filedata + data + 136)):
+            if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < (filedata + data)):
                 # raise Exception('Video is smaller than payload')
                 return 'FAILED'
         else:

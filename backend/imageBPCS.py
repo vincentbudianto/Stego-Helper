@@ -5,6 +5,8 @@ import random
 
 from .messageBPCS import messageBPCS
 from .vigenere import Vigenere
+from pathlib import Path
+import ntpath
 
 from main import Ui_MainWindow
 from PyQt5 import QtCore, QtWidgets
@@ -20,12 +22,13 @@ class imageBPCS():
         try:
             image = cv2.imread(filename)
 
+            self.path = filename
             self.image = image
             self.height, self.width, self.channels = image.shape
         except Exception as exception:
             # print(exception)
             # print('Error while reading image file')
-            return 'FAILED - Error while reading image file'
+            return 'FAILED'
 
     def writeImage(self, filename):
         cv2.imwrite(filename, self.image)
@@ -64,7 +67,7 @@ class imageBPCS():
     def from_bitplane(self, bitplane):
         return self.to_byte(bitplane, (len(bitplane) - 1))
 
-    def embed(self, path, output = ''):
+    def embed(self, path, output = None):
         key = self.key_input_text.text()
         threshold = self.threshold_input_text.text()
 
@@ -82,7 +85,7 @@ class imageBPCS():
 
         if (((self.width // self.block_size) * (self.height // self.block_size) * self.channels) < len(message)):
             # raise Exception('Image is smaller than payload')
-            return 'FAILED - Image is smaller than payload'
+            return 'FAILED'
 
         i = 0
 
@@ -117,14 +120,16 @@ class imageBPCS():
 
                 h += self.block_size
 
-        if (output == ''):
+        if (output == None):
+            old_filename = ntpath.basename(self.path).split('.')
+            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
             self.writeImage('result/image/embed_' + filename)
         else:
             self.writeImage(output)
 
         return output
 
-    def extract(self, output = ''):
+    def extract(self, output = None):
         key = self.key_input_text.text()
         threshold = self.threshold_input_text.text()
 
@@ -158,8 +163,11 @@ class imageBPCS():
             h += self.block_size
 
         filename, content, encrypted = msg.get_message(message)
+        old_filename = filename.split('.')
 
-        if (output == ''):
+        if (output == None):
+            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
+
             with open(('result/image/extracted_' + filename), 'wb') as f:
                 f.write(content)
 
@@ -167,6 +175,8 @@ class imageBPCS():
                 vig = Vigenere(key)
                 vig.decryptFile(('result/image/extracted_' + filename), ('result/image/extracted_' + filename))
         else:
+            output += '.' + old_filename[1]
+
             with open(output, 'wb') as f:
                 f.write(content)
 

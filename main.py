@@ -186,6 +186,7 @@ class Ui_MainWindow(object):
         if fileName:
             print(fileName)
             self.file_name = fileName
+            self.appendInfoText("Media file : " + self.file_name)
             mime = mimetypes.guess_type(fileName)
             if mime[0]:
                 print(mime)
@@ -234,10 +235,10 @@ class Ui_MainWindow(object):
             else:
                 self.appendInfoText("Error when reading input file")
                 return -1
-            
+
         if self.stego[0] == 'Image LSB':
             if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
-                self.info_text.setPlainText("Container file extension has to be bmp or png")
+                self.info_text.setPlainText("Container file extension has to be .bmp or .png")
                 return -1
 
             inputFileName, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -247,10 +248,8 @@ class Ui_MainWindow(object):
                 "All Files (*)",
             )
             if inputFileName:
-                self.stego[1].read_container_file(self.file_name)
+                self.stego[1].readImage(self.file_name)
                 self.appendInfoText("Container file read")
-                self.stego[1].read_input_file(inputFileName)
-                self.appendInfoText("Input file read")
 
                 fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
                     None,
@@ -261,10 +260,11 @@ class Ui_MainWindow(object):
                 result = 'FAILED'
 
                 self.appendInfoText("Embedding")
+
                 if fileName:
-                    result = self.stego[1].embed(path = self.file_name, output = fileName)
+                    result = self.stego[1].embed(path = inputFileName, output = fileName)
                 else:
-                    result = self.stego[1].embed(path = self.file_name)
+                    result = self.stego[1].embed(path = inputFileName)
 
                 if result == 'FAILED':
                     self.appendInfoText("Container file size is too small")
@@ -278,7 +278,7 @@ class Ui_MainWindow(object):
 
         if self.stego[0] == 'Image BPCS':
             if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
-                self.info_text.setPlainText("Container file extension has to be bmp or png")
+                self.info_text.setPlainText("Container file extension has to be .bmp or .png")
                 return -1
 
             inputFileName, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -288,10 +288,8 @@ class Ui_MainWindow(object):
                 "All Files (*)",
             )
             if inputFileName:
-                self.stego[1].read_container_file(self.file_name)
+                self.stego[1].readImage(self.file_name)
                 self.appendInfoText("Container file read")
-                self.stego[1].read_input_file(inputFileName)
-                self.appendInfoText("Input file read")
 
                 fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
                     None,
@@ -302,10 +300,11 @@ class Ui_MainWindow(object):
                 result = 'FAILED'
 
                 self.appendInfoText("Embedding")
+
                 if fileName:
-                    result = self.stego[1].embed(path = self.file_name, output = fileName)
+                    result = self.stego[1].embed(path = inputFileName, output = fileName)
                 else:
-                    result = self.stego[1].embed(path = self.file_name)
+                    result = self.stego[1].embed(path = inputFileName)
 
                 if result == 'FAILED':
                     self.appendInfoText("Container file size is too small")
@@ -316,13 +315,13 @@ class Ui_MainWindow(object):
             else:
                 self.appendInfoText("Error when reading input file")
                 return -1
-    
+
     def extract(self):
         if self.stego[0] == 'Audio':
             if self.file_type != 'audio' or self.file_extension not in ['wav', '-wav', 'x-wav']:
                 self.info_text.setPlainText("Container file extension has to be .wav or .x-wav")
                 return -1
-            
+
             self.info_text.setPlainText("Start Extraction Process")
             self.stego[1].read_container_file(self.file_name)
             self.appendInfoText("Container file read")
@@ -340,11 +339,61 @@ class Ui_MainWindow(object):
                 result = self.stego[1].extract(fileName)
             else:
                 result = self.stego[1].extract(None)
-            
+
             self.result_file_path = result
             self.appendInfoText("Finished extracting in " + result)
 
+        if self.stego[0] == 'Image LSB':
+            if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
+                self.info_text.setPlainText("Container file extension has to be .bmp or .png")
+                return -1
 
+            self.info_text.setPlainText("Start Extraction Process")
+            self.stego[1].readImage(self.file_name)
+            self.appendInfoText("Container file read")
+
+            fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+                None,
+                "Select File to Save Output File",
+                "",
+                "All Files (*)",
+            )
+
+            result = 'FAILED'
+            self.appendInfoText("Extracting")
+            if fileName:
+                result = self.stego[1].extract(output = fileName)
+            else:
+                result = self.stego[1].extract()
+
+            self.result_file_path = result
+            self.appendInfoText("Finished extracting in " + result)
+
+        if self.stego[0] == 'Image BPCS':
+            if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
+                self.info_text.setPlainText("Container file extension has to be .bmp or .png")
+                return -1
+
+            self.info_text.setPlainText("Start Extraction Process")
+            self.stego[1].readImage(self.file_name)
+            self.appendInfoText("Container file read")
+
+            fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+                None,
+                "Select File to Save Output File",
+                "",
+                "All Files (*)",
+            )
+
+            result = 'FAILED'
+            self.appendInfoText("Extracting")
+            if fileName:
+                result = self.stego[1].extract(output = fileName)
+            else:
+                result = self.stego[1].extract()
+
+            self.result_file_path = result
+            self.appendInfoText("Finished extracting in " + result)
 
     def appendInfoText(self, text):
         self.info_text.appendPlainText(text)
