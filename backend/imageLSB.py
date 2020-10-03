@@ -65,7 +65,7 @@ class imageLSB():
             if (self.curr_pos == (len(self.map) - 1)):
                 self.curr_pos = 0
 
-                if (self.mask_or == 2):
+                if (self.mask_or == 128):
                     return 'FAILED'
                 else:
                     self.mask_or = self.mask_one.pop(0)
@@ -115,9 +115,9 @@ class imageLSB():
         content = open(path, 'rb').read()
         data = len(content)
 
-        if ((not self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 96)))):
+        if ((not self.randomized) and ((self.width * self.height * self.channels) < (filedata + data + 96))):
             return 'FAILED'
-        elif ((self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 128)))):
+        elif ((self.randomized) and ((self.width * self.height * self.channels) < (filedata + data + 128))):
             return 'FAILED'
 
         if (self.encrypted):
