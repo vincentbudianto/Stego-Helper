@@ -10,6 +10,7 @@
 # from imageLSB import imageLSB
 # from aviVideo import AviVideo
 # from audio import Audio, audio_psnr
+import mimetypes
 
 from backend import *
 import os
@@ -26,8 +27,11 @@ class Ui_MainWindow(object):
             AviStegano(),
             Audio()
         ]
-        self.initial_file_path = ""
-        self.result_file_path = ""
+        self.file_name = ''
+        self.file_type = ''
+        self.file_extension = ''
+        self.initial_file_path = ''
+        self.result_file_path = ''
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -136,6 +140,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.open_media_button.clicked.connect(self.openMediaFile)
         self.choose_stego_dropdown.currentIndexChanged.connect(self.change_stego)
         self.open_initial_button.clicked.connect(self.open_initial_file)
         self.open_result_button.clicked.connect(self.open_result_file)
@@ -183,6 +188,22 @@ class Ui_MainWindow(object):
         self.clean(self.horizontalLayout_4)
         self.stego = self.stego_list[idx]
         self.stego.render(self)
+
+    def openMediaFile(self):
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
+            None,
+            "Select Input File",
+            "",
+            "All Files (*)",
+        )
+        if fileName:
+            print(fileName)
+            self.file_name = fileName
+            mime = mimetypes.guess_type(fileName)
+            if mime[0]:
+                print(mime)
+                self.file_type = mime[0].split('/')[0]
+                self.file_extension = mime[0].split('/')[1]
 
 if __name__ == "__main__":
     import sys
