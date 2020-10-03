@@ -342,8 +342,6 @@ class AviStegano():
         return psnr
     
     def render(self, window: Ui_MainWindow):
-        self.horizontalLayout = QtWidgets.QHBoxLayout(window.option_frame)
-        self.horizontalLayout.setObjectName("horizontalLayout")
         self.widget_3 = QtWidgets.QWidget(window.option_frame)
         self.widget_3.setObjectName("widget_3")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.widget_3)
@@ -380,7 +378,7 @@ class AviStegano():
         self.lineEdit.setObjectName("lineEdit")
         self.horizontalLayout_2.addWidget(self.lineEdit)
         self.verticalLayout_6.addWidget(self.groupBox_4)
-        self.horizontalLayout.addWidget(self.widget_3)
+        window.horizontalLayout_4.addWidget(self.widget_3)
 
         self.retranslateUi()
 
