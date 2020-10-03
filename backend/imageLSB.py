@@ -7,10 +7,10 @@ from vigenere import Vigenere
 
 class imageLSB():
     def __init__(self):
-        self.mask_one = [1, 2, 4, 8, 16, 32, 64, 128]
+        self.mask_one = [1, 2]
         self.mask_or = self.mask_one.pop(0)
 
-        self.mask_zero = [254, 253, 251, 247, 239, 223, 191, 127]
+        self.mask_zero = [254, 253]
         self.mask_and = self.mask_zero.pop(0)
 
         self.curr_pos = 0
@@ -44,7 +44,7 @@ class imageLSB():
             if (self.curr_pos == (len(self.map) - 1)):
                 self.curr_pos = 0
 
-                if (self.mask_or == 128):
+                if (self.mask_or == 2):
                     raise Exception('No available pixels remaining')
                 else:
                     self.mask_or = self.mask_one.pop(0)
@@ -93,9 +93,9 @@ class imageLSB():
         content = open(path, 'rb').read()
         data = len(content)
 
-        if ((not randomized) and ((self.width * self.height * self.channels) < (filedata + data + 96))):
+        if ((not randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 96)))):
             raise Exception('Image is smaller than payload')
-        elif ((randomized) and ((self.width * self.height * self.channels) < (filedata + data + 128))):
+        elif ((randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 128)))):
             raise Exception('Image is smaller than payload')
 
         if (encrypted):
@@ -196,14 +196,14 @@ if __name__ == '__main__':
     lsbe = imageLSB()
     lsbe.readImage('test/image/input.png')
 
-    res_encode = lsbe.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png', encrypted = False, randomized = False)
+    res_encode = lsbe.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png', encrypted = False, randomized = False)
     # res_encode = lsbe.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png', encrypted = False, randomized = False)
 
     print('<<<<< extract >>>>>>')
     lsbd = imageLSB()
     lsbd.readImage('result/image/resLSB.png')
 
-    filename = lsbd.extract(key = 'STEGANOGRAPHY', output = 'result/image/secret.txt')
+    filename = lsbd.extract(key = 'STEGANOGRAPHY', output = 'result/image/test.txt')
 
     print('extract filename :', filename)
 

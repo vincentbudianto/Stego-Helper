@@ -16,8 +16,6 @@ class imageBPCS():
 
             self.image = image
             self.height, self.width, self.channels = image.shape
-            self.size = self.width * self.height
-            self.map = list(range(self.size))
         except Exception as exception:
             print(exception)
             print('Error while reading image file')
@@ -180,14 +178,14 @@ if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
     bpcse = imageBPCS()
     bpcse.readImage('test/image/input.png')
-    res_encode = bpcse.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
+    res_encode = bpcse.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
     # res_encode = bpcse.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
 
     print('<<<<< extract >>>>>>')
     bpcsd = imageBPCS()
     bpcsd.readImage('result/image/resBPCS.png')
 
-    filename = bpcsd.extract(key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/test.txt')
+    filename = bpcsd.extract(key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/secret.txt')
 
     print('res_decode filename :', filename)
 
