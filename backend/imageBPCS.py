@@ -124,7 +124,7 @@ class imageBPCS():
 
     def extract(self, threshold = 0.3, output = ''):
         key = self.key_input_text.text()
-        
+
         msg = messageBPCS(key = key, threshold = threshold, block_size = self.block_size)
         message = []
 
@@ -253,20 +253,20 @@ if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
     bpcse = imageBPCS()
     bpcse.readImage('test/image/input.png')
-    res_encode = bpcse.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
-    # res_encode = bpcse.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
+    res_encode = bpcse.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png')
+    # res_encode = bpcse.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png')
     # bpcse.readImage('test/image/input.bmp')
-    # res_encode = bpcse.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.bmp', encrypted = False, randomized = False)
-    # res_encode = bpcse.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.bmp', encrypted = False, randomized = False)
+    # res_encode = bpcse.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.bmp')
+    # res_encode = bpcse.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.bmp')
+    print('embed filename :', res_encode)
 
     print('<<<<< extract >>>>>>')
     bpcsd = imageBPCS()
     bpcsd.readImage('result/image/resBPCS.png')
     # bpcsd.readImage('result/image/resBPCS.bmp')
 
-    filename = bpcsd.extract(key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/secret.txt')
-
-    print('res_decode filename :', filename)
+    res_decode = bpcsd.extract(key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/secret.txt')
+    print('extract filename :', res_decode)
 
     print('<<<<< psnr >>>>>>')
     bpcs = imageBPCS()
