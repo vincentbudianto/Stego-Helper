@@ -69,6 +69,9 @@ class imageBPCS():
         key = self.key_input_text.text()
         threshold = self.threshold_input_text.text()
 
+        if (threshold == ''):
+            threshold = 0.3
+
         if (self.encrypted):
             vig = Vigenere(key)
             content = vig.encryptFile(path)
@@ -131,6 +134,9 @@ class imageBPCS():
     def extract(self, output = None):
         key = self.key_input_text.text()
         threshold = self.threshold_input_text.text()
+
+        if (threshold == ''):
+            threshold = 0.3
 
         msg = messageBPCS(key = key, threshold = threshold, block_size = self.block_size)
         message = []
