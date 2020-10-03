@@ -12,6 +12,7 @@
 # from audio import Audio, audio_psnr
 
 from backend import *
+import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -25,6 +26,8 @@ class Ui_MainWindow(object):
             AviStegano(),
             Audio()
         ]
+        self.initial_file_path = ""
+        self.result_file_path = ""
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -134,6 +137,8 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         self.choose_stego_dropdown.currentIndexChanged.connect(self.change_stego)
+        self.open_initial_button.clicked.connect(self.open_initial_file)
+        self.open_result_button.clicked.connect(self.open_result_file)
 
         self.stego.render(self)
 
@@ -151,6 +156,19 @@ class Ui_MainWindow(object):
         self.open_initial_button.setText(_translate("MainWindow", "Initial"))
         self.open_result_button.setText(_translate("MainWindow", "Result"))
         self.menuStegonya_Meyer.setTitle(_translate("MainWindow", "Stegonya Meyer"))
+
+    def open_initial_file(self):
+        if self.initial_file_path == "":
+            self.info_text.setPlainText("Initial file is still empty")
+        else:
+            os.startfile(self.initial_file_path)
+    
+    def open_result_file(self):
+        if self.result_file_path == "":
+            self.info_text.setPlainText("Result file is still empty")
+        else:
+            os.startfile(self.result_file_path)
+    
 
     def clean(self, layout):
         for i in reversed(range(layout.count())):

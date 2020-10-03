@@ -85,10 +85,8 @@ class Audio():
 
             self.next_pos()
 
-    def embedding(self, key, is_randomized, is_encrypted, output_file_name):
-        self.key = key
-        self.is_randomized = is_randomized
-        self.is_encrypted = is_encrypted
+    def embedding(self, output_file_name):
+        self.key = self.lineEdit.text()
 
         inputfilename_size = len(self.input_file_name)
         inputfile_size = len(self.input_file_bytes)
@@ -149,8 +147,8 @@ class Audio():
             wav_file.writeframes(self.container_file_bytes)
             wav_file.close()
 
-    def extract(self, key, output_file_name=None):
-        self.key = key
+    def extract(self, output_file_name=None):
+        self.key = self.lineEdit.text()
 
         print("Preparing Byte Map")
         self.byte_map = list(range(self.container_file_length))
@@ -234,6 +232,9 @@ class Audio():
         window.horizontalLayout_4.addWidget(self.widget_3)
 
         self.retranslateUi()
+        self.checkBox.stateChanged.connect(self.encrypted_mode)
+        self.checkBox_2.stateChanged.connect(self.randomized_mode)
+
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -242,6 +243,13 @@ class Audio():
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.checkBox_2.setText(_translate("MainWindow", "Randomized"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
+    
+    def encrypted_mode(self, state):
+        self.is_encrypted = bool(state)
+        print(self.is_encrypted)
+    
+    def randomized_mode(self, state):
+        self.is_randomized = bool(state)
 
 def audio_psnr(original_file, embedded_file):
     file_original = wave.open(original_file, 'rb')
