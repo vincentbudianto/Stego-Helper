@@ -234,7 +234,7 @@ class Ui_MainWindow(object):
             else:
                 self.appendInfoText("Error when reading input file")
                 return -1
-            
+
         if self.stego[0] == 'Image LSB':
             if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
                 self.info_text.setPlainText("Container file extension has to be bmp or png")
@@ -314,13 +314,13 @@ class Ui_MainWindow(object):
             else:
                 self.appendInfoText("Error when reading input file")
                 return -1
-    
+
     def extract(self):
         if self.stego[0] == 'Audio':
             if self.file_type != 'audio' or self.file_extension not in ['wav', '-wav', 'x-wav']:
                 self.info_text.setPlainText("Container file extension has to be .wav or .x-wav")
                 return -1
-            
+
             self.info_text.setPlainText("Start Extraction Process")
             self.stego[1].read_container_file(self.file_name)
             self.appendInfoText("Container file read")
@@ -338,7 +338,7 @@ class Ui_MainWindow(object):
                 result = self.stego[1].extract(fileName)
             else:
                 result = self.stego[1].extract(None)
-            
+
             self.result_file_path = result
             self.appendInfoText("Finished extracting in " + result)
 

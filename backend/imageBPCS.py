@@ -5,6 +5,8 @@ import random
 
 from .messageBPCS import messageBPCS
 from .vigenere import Vigenere
+from pathlib import Path
+import ntpath
 
 from main import Ui_MainWindow
 from PyQt5 import QtCore, QtWidgets
@@ -20,6 +22,7 @@ class imageBPCS():
         try:
             image = cv2.imread(filename)
 
+            self.path = filename
             self.image = image
             self.height, self.width, self.channels = image.shape
         except Exception as exception:
@@ -64,7 +67,7 @@ class imageBPCS():
     def from_bitplane(self, bitplane):
         return self.to_byte(bitplane, (len(bitplane) - 1))
 
-    def embed(self, path, output = ''):
+    def embed(self, path, output = None):
         key = self.key_input_text.text()
         threshold = self.threshold_input_text.text()
 
@@ -117,14 +120,16 @@ class imageBPCS():
 
                 h += self.block_size
 
-        if (output == ''):
+        if (output == None):
+            old_filename = ntpath.basename(self.path).split('.')
+            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
             self.writeImage('result/image/embed_' + filename)
         else:
             self.writeImage(output)
 
         return output
 
-    def extract(self, output = ''):
+    def extract(self, output = None):
         key = self.key_input_text.text()
         threshold = self.threshold_input_text.text()
 
@@ -159,7 +164,10 @@ class imageBPCS():
 
         filename, content, encrypted = msg.get_message(message)
 
-        if (output == ''):
+        if (output == None):
+            old_filename = filename.split('.')
+            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
+
             with open(('result/image/extracted_' + filename), 'wb') as f:
                 f.write(content)
 

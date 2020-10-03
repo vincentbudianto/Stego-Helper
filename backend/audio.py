@@ -149,7 +149,7 @@ class Audio():
             wav_file.setparams(self.container_file_params)
             wav_file.writeframes(self.container_file_bytes)
             wav_file.close()
-        
+
         return output_file_path
 
     def extract(self, output_file_name=None):
@@ -199,9 +199,9 @@ class Audio():
             print("Decrypting")
             vig = Vigenere(self.key)
             vig.decryptFile(output_file_path, output_file_path)
-        
+
         return output_file_path
-    
+
     # UI
     def render(self, window: Ui_MainWindow):
         self.widget_3 = QtWidgets.QWidget(window.option_frame)
@@ -254,10 +254,10 @@ class Audio():
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.checkBox_2.setText(_translate("MainWindow", "Randomized"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
-    
+
     def encrypted_mode(self, state):
         self.is_encrypted = bool(state)
-    
+
     def randomized_mode(self, state):
         self.is_randomized = bool(state)
 
