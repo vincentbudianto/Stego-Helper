@@ -160,7 +160,10 @@ class Ui_MainWindow(object):
         if self.result_file_path == "":
             self.info_text.setPlainText("Result file is still empty")
         else:
-            os.startfile(self.result_file_path)
+            try:
+                os.startfile(self.result_file_path)
+            except:
+                self.info_text.setPlainText("Result file not found")
 
     def clean(self, layout):
         for i in reversed(range(layout.count())):
@@ -321,7 +324,7 @@ class Ui_MainWindow(object):
             if self.file_type != 'video' or self.file_extension not in ['avi', 'x-msvideo']:
                 self.info_text.setPlainText("Container file extension has to be .avi")
                 return -1
-            
+
             #Reading Video File
             self.appendInfoText("Reading Video File")
             self.stego[1].readVideo(self.file_name)
@@ -342,7 +345,7 @@ class Ui_MainWindow(object):
                 )
 
                 self.appendInfoText("Embedding...")
-                
+
                 if output_filename:
                     output_name = output_filename.split('/')
                     if output_name[-1] == '' or output_name[-1] == '.avi':
