@@ -120,11 +120,13 @@ class imageBPCS():
 
                 h += self.block_size
 
+        old_filename = ntpath.basename(self.path).split('.')
+
         if (output == None):
-            old_filename = ntpath.basename(self.path).split('.')
-            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
-            self.writeImage('result/image/embed_' + filename)
+            output = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
+            self.writeImage(output)
         else:
+            output += old_filename[1]
             self.writeImage(output)
 
         return output
@@ -163,18 +165,20 @@ class imageBPCS():
             h += self.block_size
 
         filename, content, encrypted = msg.get_message(message)
+        old_filename = filename.split('.')
 
         if (output == None):
-            old_filename = filename.split('.')
-            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
+            output = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
 
-            with open(('result/image/extracted_' + filename), 'wb') as f:
+            with open(output, 'wb') as f:
                 f.write(content)
 
             if (encrypted):
                 vig = Vigenere(key)
-                vig.decryptFile(('result/image/extracted_' + filename), ('result/image/extracted_' + filename))
+                vig.decryptFile(output, output)
         else:
+            output += '.' + old_filename[1]
+
             with open(output, 'wb') as f:
                 f.write(content)
 
