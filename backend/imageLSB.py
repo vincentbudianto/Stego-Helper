@@ -33,7 +33,7 @@ class imageLSB():
         except Exception as exception:
             # print(exception)
             # print('Error while reading image file')
-            return 'FAILED - Error while reading image file'
+            return 'FAILED'
 
     def writeImage(self, filename):
         cv2.imwrite(filename, self.image)
@@ -53,7 +53,7 @@ class imageLSB():
 
                 if (self.mask_or == 2):
                     raise Exception('No available pixels remaining')
-                    return 'FAILED - No available pixels remaining'
+                    return 'FAILED'
                 else:
                     self.mask_or = self.mask_one.pop(0)
                     self.mask_and = self.mask_zero.pop(0)
@@ -104,10 +104,10 @@ class imageLSB():
 
         if ((not self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 96)))):
             # raise Exception('Image is smaller than payload')
-            return 'FAILED - Image is smaller than payload'
+            return 'FAILED'
         elif ((self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 128)))):
             # raise Exception('Image is smaller than payload')
-            return 'FAILED - Image is smaller than payload'
+            return 'FAILED'
 
         if (self.encrypted):
             vig = Vigenere(key)

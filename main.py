@@ -245,10 +245,8 @@ class Ui_MainWindow(object):
                 "All Files (*)",
             )
             if inputFileName:
-                self.stego[1].read_container_file(self.file_name)
+                self.stego[1].readImage(self.file_name)
                 self.appendInfoText("Container file read")
-                self.stego[1].read_input_file(inputFileName)
-                self.appendInfoText("Input file read")
 
                 fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
                     None,
@@ -259,10 +257,11 @@ class Ui_MainWindow(object):
                 result = 'FAILED'
 
                 self.appendInfoText("Embedding")
+
                 if fileName:
-                    result = self.stego[1].embed(path = self.file_name, output = fileName)
+                    result = self.stego[1].embed(path = inputFileName, output = fileName)
                 else:
-                    result = self.stego[1].embed(path = self.file_name)
+                    result = self.stego[1].embed(path = inputFileName)
 
                 if result == 'FAILED':
                     self.appendInfoText("Container file size is too small")
@@ -286,10 +285,8 @@ class Ui_MainWindow(object):
                 "All Files (*)",
             )
             if inputFileName:
-                self.stego[1].read_container_file(self.file_name)
+                self.stego[1].readImage(self.file_name)
                 self.appendInfoText("Container file read")
-                self.stego[1].read_input_file(inputFileName)
-                self.appendInfoText("Input file read")
 
                 fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
                     None,
@@ -300,10 +297,11 @@ class Ui_MainWindow(object):
                 result = 'FAILED'
 
                 self.appendInfoText("Embedding")
+
                 if fileName:
-                    result = self.stego[1].embed(path = self.file_name, output = fileName)
+                    result = self.stego[1].embed(path = inputFileName, output = fileName)
                 else:
-                    result = self.stego[1].embed(path = self.file_name)
+                    result = self.stego[1].embed(path = inputFileName)
 
                 if result == 'FAILED':
                     self.appendInfoText("Container file size is too small")

@@ -25,7 +25,7 @@ class imageBPCS():
         except Exception as exception:
             # print(exception)
             # print('Error while reading image file')
-            return 'FAILED - Error while reading image file'
+            return 'FAILED'
 
     def writeImage(self, filename):
         cv2.imwrite(filename, self.image)
@@ -82,7 +82,7 @@ class imageBPCS():
 
         if (((self.width // self.block_size) * (self.height // self.block_size) * self.channels) < len(message)):
             # raise Exception('Image is smaller than payload')
-            return 'FAILED - Image is smaller than payload'
+            return 'FAILED'
 
         i = 0
 
