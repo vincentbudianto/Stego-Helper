@@ -85,7 +85,7 @@ class Audio():
 
             self.next_pos()
 
-    def embedding(self, output_file_name):
+    def embedding(self, output_file_name=None):
         self.key = self.lineEdit.text()
 
         inputfilename_size = len(self.input_file_name)
@@ -141,6 +141,9 @@ class Audio():
         ### WRITE FILES ###
         print("Writing output")
         output_file_path = output_file_name
+        if output_file_path == None:
+            old_filename = ntpath.basename(self.container_file_path).split('.')
+            output_file_path = str(Path(self.container_file_path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
         self.encrypted_file_path = output_file_path
         with wave.open(output_file_path, 'wb') as wav_file:
             wav_file.setparams(self.container_file_params)
@@ -187,6 +190,7 @@ class Audio():
         print("Writing output")
         if output_file_name == None:
             output_file_name = filename.decode()
+            output_file_name = str(Path(self.container_file_path).parent) + '/' + output_file_name
 
         output_file_path = output_file_name
         save_file(output_file_path, content)
@@ -253,7 +257,6 @@ class Audio():
     
     def encrypted_mode(self, state):
         self.is_encrypted = bool(state)
-        print(self.is_encrypted)
     
     def randomized_mode(self, state):
         self.is_randomized = bool(state)
