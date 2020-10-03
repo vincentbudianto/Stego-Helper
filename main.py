@@ -238,7 +238,7 @@ class Ui_MainWindow(object):
 
         if self.stego[0] == 'Image LSB':
             if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
-                self.info_text.setPlainText("Container file extension has to be bmp or png")
+                self.info_text.setPlainText("Container file extension has to be .bmp or .png")
                 return -1
 
             inputFileName, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -278,7 +278,7 @@ class Ui_MainWindow(object):
 
         if self.stego[0] == 'Image BPCS':
             if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
-                self.info_text.setPlainText("Container file extension has to be bmp or png")
+                self.info_text.setPlainText("Container file extension has to be .bmp or .png")
                 return -1
 
             inputFileName, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -343,7 +343,57 @@ class Ui_MainWindow(object):
             self.result_file_path = result
             self.appendInfoText("Finished extracting in " + result)
 
+        if self.stego[0] == 'Image LSB':
+            if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
+                self.info_text.setPlainText("Container file extension has to be .bmp or .png")
+                return -1
 
+            self.info_text.setPlainText("Start Extraction Process")
+            self.stego[1].readImage(self.file_name)
+            self.appendInfoText("Container file read")
+
+            fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+                None,
+                "Select File to Save Output File",
+                "",
+                "All Files (*)",
+            )
+
+            result = 'FAILED'
+            self.appendInfoText("Extracting")
+            if fileName:
+                result = self.stego[1].extract(output = fileName)
+            else:
+                result = self.stego[1].extract()
+
+            self.result_file_path = result
+            self.appendInfoText("Finished extracting in " + result)
+
+        if self.stego[0] == 'Image BPCS':
+            if self.file_type != 'image' or self.file_extension not in ['bmp', 'png']:
+                self.info_text.setPlainText("Container file extension has to be .bmp or .png")
+                return -1
+
+            self.info_text.setPlainText("Start Extraction Process")
+            self.stego[1].readImage(self.file_name)
+            self.appendInfoText("Container file read")
+
+            fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+                None,
+                "Select File to Save Output File",
+                "",
+                "All Files (*)",
+            )
+
+            result = 'FAILED'
+            self.appendInfoText("Extracting")
+            if fileName:
+                result = self.stego[1].extract(output = fileName)
+            else:
+                result = self.stego[1].extract()
+
+            self.result_file_path = result
+            self.appendInfoText("Finished extracting in " + result)
 
     def appendInfoText(self, text):
         self.info_text.appendPlainText(text)
