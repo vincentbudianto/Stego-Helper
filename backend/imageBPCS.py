@@ -178,7 +178,7 @@ class imageBPCS():
         psnr = 20 * math.log10(max_pixel / math.sqrt(mse))
 
         return psnr
-    
+
     def render(self, window:Ui_MainWindow):
         self.image_bpcs_widget = QtWidgets.QWidget(window.option_frame)
         self.image_bpcs_widget.setObjectName("image_bpcs_widget")
@@ -224,7 +224,7 @@ class imageBPCS():
         window.horizontalLayout_4.addWidget(self.image_bpcs_widget)
 
         self.retranslateUi()
-        
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.groupBox.setTitle(_translate("MainWindow", "Encryption"))
@@ -240,10 +240,14 @@ if __name__ == '__main__':
     bpcse.readImage('test/image/input.png')
     res_encode = bpcse.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
     # res_encode = bpcse.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
+    # bpcse.readImage('test/image/input.bmp')
+    # res_encode = bpcse.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.bmp', encrypted = False, randomized = False)
+    # res_encode = bpcse.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.bmp', encrypted = False, randomized = False)
 
     print('<<<<< extract >>>>>>')
     bpcsd = imageBPCS()
     bpcsd.readImage('result/image/resBPCS.png')
+    # bpcsd.readImage('result/image/resBPCS.bmp')
 
     filename = bpcsd.extract(key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/secret.txt')
 
@@ -253,4 +257,6 @@ if __name__ == '__main__':
     bpcs = imageBPCS()
     image_one = cv2.imread('test/image/input.png')
     image_two = cv2.imread('result/image/resBPCS.png')
+    # image_one = cv2.imread('test/image/input.bmp')
+    # image_two = cv2.imread('result/image/resBPCS.bmp')
     print('psnr :', bpcs.psnr(image_one, image_two))
