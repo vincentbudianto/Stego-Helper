@@ -183,14 +183,14 @@ class imageLSB():
         old_filename = filename.split('.')
 
         if (output == None):
-            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
+            output = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
 
-            with open(filename, 'wb') as f:
+            with open(output, 'wb') as f:
                 f.write(content)
 
             if (encrypted == 22):
                 vig = Vigenere(key)
-                vig.decryptFile(filename, filename)
+                vig.decryptFile(output, output)
         else:
             output += '.' + old_filename[1]
 
