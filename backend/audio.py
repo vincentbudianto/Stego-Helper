@@ -34,6 +34,8 @@ class Audio():
         self.curr_byte = 0
 
     def read_container_file(self, container_file_path):
+        self.reset()
+        self.counter = 0
         self.container_file_path = container_file_path
         self.container_file_audio = wave.open(self.container_file_path, "r")
         self.container_file_params = self.container_file_audio.getparams()
@@ -51,7 +53,7 @@ class Audio():
         if (self.curr_byte == (self.container_file_length - 1)):
             self.curr_byte = 0
 
-            if (self.mask_or == 16):
+            if (self.mask_or == 2):
                 raise Exception("No available pixels remaining")
             else:
                 self.mask_or = self.mask_one.pop(0)
@@ -98,7 +100,7 @@ class Audio():
         content = self.input_file_bytes
 
         # Limiting LSB into last 2 bits
-        if self.container_file_length < 4 * (152 + inputfilename_size + inputfile_size):
+        if self.container_file_length < 8 * (152 + inputfilename_size + inputfile_size):
             return 'FAILED'
 
         if self.is_encrypted:
@@ -144,6 +146,9 @@ class Audio():
         if output_file_path == None:
             old_filename = ntpath.basename(self.container_file_path).split('.')
             output_file_path = str(Path(self.container_file_path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
+        else:
+            splitted_decoded = self.container_file_path.split('.')
+            output_file_path = output_file_path + '.' + splitted_decoded[1]
         self.encrypted_file_path = output_file_path
         with wave.open(output_file_path, 'wb') as wav_file:
             wav_file.setparams(self.container_file_params)
@@ -161,6 +166,9 @@ class Audio():
         is_encrypted = self.read_bits(8)
         is_randomized = self.read_bits(8)
 
+        print("Is encrypted:", is_encrypted)
+        print("Is randomized:", is_randomized)
+
         if (is_randomized == 22):
             print("Randomizing bytes")
             total_ASCII = 0
@@ -175,6 +183,10 @@ class Audio():
 
         filename_size = self.read_bits(64)
         content_size = self.read_bits(64)
+        print('key', self.key)
+        print('byte map', len(self.byte_map))
+        print('filename_size', filename_size)
+        print('content_size', content_size)
 
         print("Extracting")
 
@@ -292,6 +304,9 @@ class Audio():
 
         delta = np.sum(pow((original_bytes_int - embedded_bytes_int),2))
         mse = delta / len(file_original_bytes)
+
+        if mse == 0:
+            mse = 100
 
         psnr = 20 * math.log10(255 / math.sqrt(mse))
         return psnr
