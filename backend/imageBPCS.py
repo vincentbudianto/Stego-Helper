@@ -67,7 +67,7 @@ class imageBPCS():
 
     def embed(self, path, output = None):
         key = self.key_input_text.text()
-        threshold = self.threshold_input_text.text()
+        threshold = float(self.threshold_input_text.text())
 
         if (threshold == ''):
             threshold = 0.3
@@ -84,7 +84,7 @@ class imageBPCS():
 
         message = msg.set_message()
 
-        if (((self.width // self.block_size) * (self.height // self.block_size) * self.channels) < len(message)):
+        if (((self.width // self.block_size) * (self.height // self.block_size) * self.channels * 8) < len(message)):
             return 'FAILED'
 
         i = 0
@@ -133,7 +133,7 @@ class imageBPCS():
 
     def extract(self, output = None):
         key = self.key_input_text.text()
-        threshold = self.threshold_input_text.text()
+        threshold = float(self.threshold_input_text.text())
 
         if (threshold == ''):
             threshold = 0.3

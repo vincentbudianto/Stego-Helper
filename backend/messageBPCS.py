@@ -129,8 +129,6 @@ class messageBPCS():
         binary = self.to_binary(self.header)
         self.header_bitplane = self.to_bitplane(binary)
 
-        print(header)
-
         return self.header_bitplane
 
     def get_header(self):
@@ -138,7 +136,6 @@ class messageBPCS():
         self.header = self.header.decode('utf-8', errors='ignore')
 
         headers = self.header.split('|')
-        print(self.header)
 
         if (int(headers[0]) == 22):
             self.encrypted = True
