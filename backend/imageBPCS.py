@@ -126,7 +126,7 @@ class imageBPCS():
             output = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
             self.writeImage(output)
         else:
-            output += old_filename[1]
+            output += '.' + old_filename[1]
             self.writeImage(output)
 
         return output
