@@ -180,9 +180,9 @@ class imageLSB():
             content.extend([self.read_bits(8)])
 
         filename = filename.decode()
+        old_filename = filename.split('.')
 
         if (output == None):
-            old_filename = filename.split('.')
             filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
 
             with open(filename, 'wb') as f:
@@ -192,6 +192,8 @@ class imageLSB():
                 vig = Vigenere(key)
                 vig.decryptFile(filename, filename)
         else:
+            output += '.' + old_filename[1]
+
             with open(output, 'wb') as f:
                 f.write(content)
 

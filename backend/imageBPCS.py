@@ -163,9 +163,9 @@ class imageBPCS():
             h += self.block_size
 
         filename, content, encrypted = msg.get_message(message)
+        old_filename = filename.split('.')
 
         if (output == None):
-            old_filename = filename.split('.')
             filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
 
             with open(('result/image/extracted_' + filename), 'wb') as f:
@@ -175,6 +175,8 @@ class imageBPCS():
                 vig = Vigenere(key)
                 vig.decryptFile(('result/image/extracted_' + filename), ('result/image/extracted_' + filename))
         else:
+            output += '.' + old_filename[1]
+
             with open(output, 'wb') as f:
                 f.write(content)
 
