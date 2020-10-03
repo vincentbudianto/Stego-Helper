@@ -20,7 +20,7 @@ class imageBPCS():
             self.map = list(range(self.size))
         except Exception as exception:
             print(exception)
-            print("Error while reading image file")
+            print('Error while reading image file')
 
     def writeImage(self, filename):
         cv2.imwrite(filename, self.image)
@@ -59,12 +59,12 @@ class imageBPCS():
     def from_bitplane(self, bitplane):
         return self.to_byte(bitplane, (len(bitplane) - 1))
 
-    def embed(self, path, key, threshold, encrypted, randomized):
+    def embed(self, path, key, threshold = 0.3, output = '', encrypted = False, randomized = False):
         if (encrypted):
             vig = Vigenere(key)
             content = vig.encryptFile(path)
         else:
-            content = open(path, "rb").read()
+            content = open(path, 'rb').read()
 
         filename = path.split('/')[-1]
 
@@ -108,9 +108,14 @@ class imageBPCS():
 
                 h += self.block_size
 
-        return self.image
+        if (output == ''):
+            self.writeImage('result/image/embed_' + filename)
+        else:
+            self.writeImage(output)
 
-    def extract(self, key, threshold):
+        return output
+
+    def extract(self, key, threshold = 0.3, output = ''):
         msg = messageBPCS(key = key, threshold = threshold, block_size = self.block_size)
         message = []
 
@@ -142,14 +147,22 @@ class imageBPCS():
 
         filename, content, encrypted = msg.get_message(message)
 
-        with open('result/image/' + filename, "wb") as f:
-            f.write(content)
+        if (output == ''):
+            with open(('result/image/extracted_' + filename), 'wb') as f:
+                f.write(content)
 
-        if (encrypted):
-            vig = Vigenere(key)
-            vig.decryptFile('result/image/' + filename, ('result/image/decrypted_' + filename))
+            if (encrypted):
+                vig = Vigenere(key)
+                vig.decryptFile(('result/image/extracted_' + filename), ('result/image/extracted_' + filename))
+        else:
+            with open(output, 'wb') as f:
+                f.write(content)
 
-        return filename, content
+            if (encrypted == 22):
+                vig = Vigenere(key)
+                vig.decryptFile(output, output)
+
+        return output
 
     @staticmethod
     def psnr(image_one, image_two):
@@ -166,25 +179,20 @@ class imageBPCS():
 if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
     bpcse = imageBPCS()
-    bpcse.readImage('image/input.png')
-    res_encode = bpcse.embed(path = 'image/test.txt', key = 'STEGANOGRAPHY', threshold = 0.3, encrypted = False, randomized = False)
-    # res_encode = bpcse.embed(path = 'image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, encrypted = False, randomized = False)
-    bpcse.writeImage('result/image/resBPCS.png')
+    bpcse.readImage('test/image/input.png')
+    res_encode = bpcse.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
+    # res_encode = bpcse.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
 
     print('<<<<< extract >>>>>>')
     bpcsd = imageBPCS()
     bpcsd.readImage('result/image/resBPCS.png')
 
-    filename, content = bpcsd.extract(key = 'STEGANOGRAPHY', threshold = 0.3)
+    filename = bpcsd.extract(key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/test.txt')
 
     print('res_decode filename :', filename)
-    print(' res_decode content :', len(content))
-
-    # with open(filename, "wb") as f:
-    # 	f.write(content)
 
     print('<<<<< psnr >>>>>>')
     bpcs = imageBPCS()
-    image_one = cv2.imread('image/input.png')
+    image_one = cv2.imread('test/image/input.png')
     image_two = cv2.imread('result/image/resBPCS.png')
     print('psnr :', bpcs.psnr(image_one, image_two))
