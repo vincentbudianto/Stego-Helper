@@ -112,6 +112,11 @@ class AviStegano():
         #Save initial frame
         self.initial_frames = []
 
+        #Flag
+        self.encryption = False
+        self.randomized_frame = False
+        self.randomized_pixel = False
+
     def readVideo(self, video_filename):
         #Read aviVideo
         self.aviVideo = AviVideo()
@@ -196,7 +201,7 @@ class AviStegano():
             self.frames[self.frame_map[self.curr_frame]][height_idx, width_idx] = tuple(val)
             self.next_pos()
 
-    def embeed(self, message_file_name, output_filename, key, encryption=False, randomized_frame=False, randomized_pixel=False):
+    def embeed(self, message_file_name, output_filename, key):
         #Set AviStegano Metadata
         seed = sum(ord(k) for k in key)
 
@@ -205,7 +210,7 @@ class AviStegano():
         data = len(content)
 
         #Add Encryption Flag Bits
-        if (encryption):
+        if (self.encryption):
             print('Encrypting Message File')
             vig = Vigenere(key)
             content = vig.encryptFile(message_file_name)
@@ -214,19 +219,19 @@ class AviStegano():
             self.put_value(format(FLAG_FALSE, '08b'))
 
         #Add Randomized Frame Flag Bits
-        if (randomized_frame):
+        if (self.randomized_frame):
             self.put_value(format(FLAG_TRUE, '08b'))
         else:
             self.put_value(format(FLAG_FALSE, '08b'))
 
         #Add Randomized Pixel Flag Bits
-        if (randomized_pixel):
+        if (self.randomized_pixel):
             self.put_value(format(FLAG_TRUE, '08b'))
         else:
             self.put_value(format(FLAG_FALSE, '08b'))
 
         #If any random skip early frame
-        if (randomized_frame or randomized_pixel):
+        if (self.randomized_frame or self.randomized_pixel):
             random.seed(seed)
             self.skipped_frame = self.curr_frame + 1
 
@@ -238,15 +243,15 @@ class AviStegano():
             self.curr_pos = 0
             self.curr_channel = 0
 
-            if (randomized_frame):
+            if (self.randomized_frame):
                 print('Randomized Frame')
                 random.shuffle(self.frame_map)
 
-            if (randomized_pixel):
+            if (self.randomized_pixel):
                 print('Randomized Pixel')
                 random.shuffle(self.map)
 
-        if (randomized_frame or randomized_pixel):
+        if (self.randomized_frame or self.randomized_pixel):
             if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < (filedata + data + 136)):
                 # raise Exception('Video is smaller than payload')
                 return 'FAILED'
@@ -382,6 +387,10 @@ class AviStegano():
 
         self.retranslateUi()
 
+        self.checkBox.stateChanged.connect(self.enable_encryption)
+        self.checkBox_3.stateChanged.connect(self.enable_randomized_frame)
+        self.checkBox_2.stateChanged.connect(self.enable_randomized_pixel)
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.groupBox.setTitle(_translate("MainWindow", "Encryption"))
@@ -391,6 +400,14 @@ class AviStegano():
         self.checkBox_2.setText(_translate("MainWindow", "Randomized Pixel"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
+    def enable_encryption(self, state):
+        self.encryption = bool(state)
+
+    def enable_randomized_frame(self, state):
+        self.randomized_frame = bool(state)
+
+    def enable_randomized_pixel(self, state):
+        self.randomized_pixel = bool(state)
 
 if __name__ == "__main__":
     # Embeed

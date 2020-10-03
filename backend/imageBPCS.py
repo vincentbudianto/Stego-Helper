@@ -13,6 +13,9 @@ class imageBPCS():
     def __init__(self):
         self.block_size = 8
 
+        self.encrypted = False
+        self.randomized = False
+
     def readImage(self, filename):
         try:
             image = cv2.imread(filename)
@@ -61,8 +64,8 @@ class imageBPCS():
     def from_bitplane(self, bitplane):
         return self.to_byte(bitplane, (len(bitplane) - 1))
 
-    def embed(self, path, key, threshold = 0.3, output = '', encrypted = False, randomized = False):
-        if (encrypted):
+    def embed(self, path, key, threshold = 0.3, output = ''):
+        if (self.encrypted):
             vig = Vigenere(key)
             content = vig.encryptFile(path)
         else:
@@ -70,7 +73,7 @@ class imageBPCS():
 
         filename = path.split('/')[-1]
 
-        msg = messageBPCS(filename = filename, content = content, key = key, threshold = threshold, encrypted = encrypted, randomized = randomized, block_size = self.block_size)
+        msg = messageBPCS(filename = filename, content = content, key = key, threshold = threshold, encrypted = self.encrypted, randomized = self.randomized, block_size = self.block_size)
 
         message = msg.set_message()
 
@@ -225,6 +228,9 @@ class imageBPCS():
 
         self.retranslateUi()
 
+        self.encryption_checkbox.stateChanged.connect(self.enable_encrypted)
+        self.randomized_checkbox.stateChanged.connect(self.enable_randomized)
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.groupBox.setTitle(_translate("MainWindow", "Encryption"))
@@ -233,6 +239,12 @@ class imageBPCS():
         self.randomized_checkbox.setText(_translate("MainWindow", "Randomized Pixel"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Threshold (0.1 - 0.5)"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
+
+    def enable_encrypted(self, state):
+        self.encrypted = bool(state)
+
+    def enable_randomized(self, state):
+        self.randomized = bool(state)
 
 if __name__ == '__main__':
     print('<<<<< embed >>>>>>')

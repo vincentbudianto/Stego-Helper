@@ -236,6 +236,9 @@ class Audio():
         self.checkBox_2.stateChanged.connect(self.randomized_mode)
 
 
+        self.checkBox.stateChanged.connect(self.enable_encrypted)
+        self.checkBox_2.stateChanged.connect(self.enable_randomized)
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.groupBox.setTitle(_translate("MainWindow", "Encryption"))
@@ -249,6 +252,12 @@ class Audio():
         print(self.is_encrypted)
     
     def randomized_mode(self, state):
+        self.is_randomized = bool(state)
+
+    def enable_encrypted(self, state):
+        self.is_encrypted = bool(state)
+
+    def enable_randomized(self, state):
         self.is_randomized = bool(state)
 
 def audio_psnr(original_file, embedded_file):

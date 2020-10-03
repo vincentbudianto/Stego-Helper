@@ -19,6 +19,9 @@ class imageLSB():
         self.curr_pos = 0
         self.curr_channel = 0
 
+        self.encrypted = False
+        self.randomized = False
+
     def readImage(self, filename):
         try:
             image = cv2.imread(filename)
@@ -92,32 +95,32 @@ class imageLSB():
             self.image[x, y] = tuple(val)
             self.next_pos()
 
-    def embed(self, path, key, output = '', encrypted = False, randomized = False):
+    def embed(self, path, key, output = ''):
         filename = path.split('/')[-1]
         filedata = len(filename)
         content = open(path, 'rb').read()
         data = len(content)
 
-        if ((not randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 96)))):
+        if ((not self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 96)))):
             # raise Exception('Image is smaller than payload')
             return 'FAILED - Image is smaller than payload'
-        elif ((randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 128)))):
+        elif ((self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 128)))):
             # raise Exception('Image is smaller than payload')
             return 'FAILED - Image is smaller than payload'
 
-        if (encrypted):
+        if (self.encrypted):
             vig = Vigenere(key)
             content = vig.encryptFile(path)
             self.put_value(format(22, '08b'))
         else:
             self.put_value(format(11, '08b'))
 
-        if (randomized):
+        if (self.randomized):
             self.put_value(format(22, '08b'))
         else:
             self.put_value(format(11, '08b'))
 
-        if (randomized):
+        if (self.randomized):
             seed = sum(ord(k) for k in key)
             random.seed(seed)
 
@@ -236,6 +239,9 @@ class imageLSB():
 
         self.retranslateUi()
 
+        self.encryption_checkbox.stateChanged.connect(self.enable_encrypted)
+        self.randomized_checkbox.stateChanged.connect(self.enable_randomized)
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.groupBox.setTitle(_translate("MainWindow", "Encryption"))
@@ -243,6 +249,13 @@ class imageLSB():
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.randomized_checkbox.setText(_translate("MainWindow", "Randomized Pixel"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
+
+    def enable_encrypted(self, state):
+        self.encrypted = bool(state)
+
+    def enable_randomized(self, state):
+        self.randomized = bool(state)
+
 
 if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
