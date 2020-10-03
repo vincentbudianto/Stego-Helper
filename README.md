@@ -34,19 +34,19 @@ Steganografi adalah proses penyembunyian file rahasia dalam file yang lebih besa
 Audio steganography menyembunyikan file dalam sebuah file audio yang bertipe .wav. Alasan file .wav yang dibutuhkan dikarenakan file tersebut tidak mengalami kompresi sehingga metode LSB pada bit-bit data tidak akan terlalu mempengaruhi hasil audio yang dihasilkan. <br>
 Cara melakukan steganografi pada file audio dengan tipe .wav adalah dengan memulai encoding pada byte ke-44 dengan metode LSB. Setelah itu, file hasil embedding akan dihubungkan kembali dengan 44 bit yang sebelumnya.
 
-## Program Steganografi 
+## Program Steganografi
 Program steganografi yang dibuat dapat memproses media file gambar, video, maupun audio. Selain itu, untuk menambahkan tingkat kompeksitas penyisipan pesan, program memiliki 2 fitur, yaitu :
 - __Enkripsi__ <br>
   program dapat melakukan enkripsi untuk file pesan dengan menggunakan metode vigenere cipher sebelum pesan disisipkan pada media file
 - Random
   program dapat menyisipkan pesan secara acak untuk byte dari pesan, pada image dapat dilakukan random pada penyisipan dari posisi pixel, dan pada video juga dapat dilakukan random pada penyisipan dari posisi frame
 
-### Opsi Aplikasi Steganografi 
+### Opsi Aplikasi Steganografi
 - __Image (LSB)__ <br>
   Steganografi melalui media gambar dengan metode LSB.
     - Acceptable file : .bmp, .png
     - Parameter input
-      - stego key : key sebagai kunci enkripsi dan digunakan untuk membangkitkan nilai seed pada fungsi random 
+      - stego key : key sebagai kunci enkripsi dan digunakan untuk membangkitkan nilai seed pada fungsi random
       - encryption : status enkripsi untuk file message
       - random pixel : metode pengacakan untuk penyisipan bit pada pixel gambar
 
@@ -54,16 +54,16 @@ Program steganografi yang dibuat dapat memproses media file gambar, video, maupu
   Steganografi melalui media gambar dengan metode LSB.
     - Acceptable file : .bmp, .png
     - Parameter input
-      - stego key : key sebagai kunci enkripsi dan digunakan untuk membangkitkan nilai seed pada fungsi random 
-      - threshold : nilai batas untuk noise bitplane
+      - stego key : key sebagai kunci enkripsi dan digunakan untuk membangkitkan nilai seed pada fungsi random
+      - threshold : nilai batas untuk menentukan informative regions dan noise-like regions
       - encryption : status enkripsi untuk file message
       - random pixel : metode pengacakan untuk penyisipan bit pada pixel bitplane
 
 - __Video__ <br>
   Steganografi melalui media gambar dengan metode LSB.
     - Acceptable file : .avi
-    - Parameter input  
-      - stego key : key sebagai kunci enkripsi dan digunakan untuk membangkitkan nilai seed pada fungsi random 
+    - Parameter input
+      - stego key : key sebagai kunci enkripsi dan digunakan untuk membangkitkan nilai seed pada fungsi random
       - encryption : status enkripsi untuk file message
       - random frame : metode pengacakan untuk penyisipan bit pada frame video
       - random pixel : metode pengacakan untuk penyisipan bit pada pixel video
@@ -71,15 +71,15 @@ Program steganografi yang dibuat dapat memproses media file gambar, video, maupu
 - __Audio__ <br>
   Steganografi melalui media gambar dengan metode LSB.
     - Acceptable file : 'wav', '-wav', 'x-wav'
-    - Parameter input  
-      - stego key : key sebagai kunci enkripsi dan digunakan untuk membangkitkan nilai seed pada fungsi random 
+    - Parameter input
+      - stego key : key sebagai kunci enkripsi dan digunakan untuk membangkitkan nilai seed pada fungsi random
       - encryption : status enkripsi untuk file message
       - random : metode pengacakan untuk penyisipan bit pada byte video
 
 ### PSNR
 Program juga dapat menghitung nilai PSNR atau Peak Signal-to-Noise Ratio yang menunjukan perbandingan antara nlai maksimum dari sinyal yang diukur dengan besarnya dearu yang berpegaruh pada sinyal tersebut dan diukur dengan satuan desibel. Untuk menghitung PSNR gambar, dengan membandingkan perbedaan setiap pixel dari gambar, untuk video dengan menghitung rata-rata nilai psnr setiap frame dengan menggunakan perhitungan psnr gambar, sedangkan untuk menghitung PSNR audio dengan membandingkan setiap byte pada file audionya.
 
-### Referensi 
+### Referensi
 - [Image Steganography using Python. Understanding LSB Image Steganography… | by Rupali Roy](https://towardsdatascience.com/hiding-data-in-an-image-image-steganography-using-python-e491b68b1372)
 - [least Significant Bit - an overview](https://www.sciencedirect.com/topics/computer-science/least-significant-bit)
 - [Steganography — LSB Introduction with Python — Part 1 | by Juan Cortés](https://itnext.io/steganography-101-lsb-introduction-with-python-4c4803e08041)
@@ -90,9 +90,7 @@ Program juga dapat menghitung nilai PSNR atau Peak Signal-to-Noise Ratio yang me
 - [AVI File Format](https://cdn.hackaday.io/files/274271173436768/avi.pdf)
 - [Microsoft WAVE soundfile format](http://soundfile.sapp.org/doc/WaveFormat/)
 
-
-
 ### Author
-- 13517066 | Willy Santoso
-- 13517131 | Jan Meyer Saragih
-- 13517137 | Vincent Budianto
+- [13517066 | Willy Santoso](https://github.com/willysantoso05)
+- [13517131 | Jan Meyer Saragih](https://github.com/Meyjan)
+- [13517137 | Vincent Budianto](https://github.com/vincentbudianto)
