@@ -186,6 +186,7 @@ class Ui_MainWindow(object):
         if fileName:
             print(fileName)
             self.file_name = fileName
+            self.appendInfoText("Media file : " + self.file_name)
             mime = mimetypes.guess_type(fileName)
             if mime[0]:
                 print(mime)
