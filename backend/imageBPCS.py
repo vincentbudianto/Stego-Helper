@@ -65,12 +65,41 @@ class imageBPCS():
     def from_bitplane(self, bitplane):
         return self.to_byte(bitplane, (len(bitplane) - 1))
 
+    def capacity(self, threshold):
+        count = 0
+        h = 0
+
+        while (h < (self.height - self.block_size + 1)):
+            w = 0
+
+            while (w < (self.width - self.block_size + 1)):
+                block = self.image[h:(h + self.block_size), w:(w + self.block_size)]
+                blocks = cv2.split(block)
+                bitplanes = [self.to_bitplane(block) for block in blocks]
+                i = 0
+
+                for bitplane in bitplanes:
+                    for plane in bitplane:
+                        if (self.complexity(plane) >= threshold):
+                            count += 1
+
+                channel = [self.from_bitplane(bitplane) for bitplane in bitplanes]
+                new_blocks = cv2.merge(channel)
+                self.image[h:(h + self.block_size), w:(w + self.block_size)] = new_blocks
+                w += self.block_size
+
+            h += self.block_size
+
+        return count
+
     def embed(self, path, output = None):
         key = self.key_input_text.text()
-        threshold = float(self.threshold_input_text.text())
+        threshold = self.threshold_input_text.text()
 
         if (threshold == ''):
             threshold = 0.3
+        else:
+            threshold = float(threshold)
 
         if (self.encrypted):
             vig = Vigenere(key)
@@ -84,7 +113,7 @@ class imageBPCS():
 
         message = msg.set_message()
 
-        if (((self.width // self.block_size) * (self.height // self.block_size) * self.channels) < len(message)):
+        if (self.capacity(threshold) < len(message)):
             return 'FAILED'
 
         i = 0
@@ -133,10 +162,12 @@ class imageBPCS():
 
     def extract(self, output = None):
         key = self.key_input_text.text()
-        threshold = float(self.threshold_input_text.text())
+        threshold = self.threshold_input_text.text()
 
         if (threshold == ''):
             threshold = 0.3
+        else:
+            threshold = float(threshold)
 
         msg = messageBPCS(key = key, threshold = threshold, block_size = self.block_size)
         message = []
