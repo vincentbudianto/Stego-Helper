@@ -315,10 +315,16 @@ class AviStegano():
         for byte in range(data):
             result.extend([self.read_bits(8)])
 
-        if (filename_message_output == ''):
-            filename = filename.decode()
+        filepath = filename.decode()
+        original_filename = filepath.split('/')[-1]
+        
+        if filename_message_output == '':
+            video_path = self.aviVideo.filename.split('/')
+            filename =  '/'.join(video_path[:-1]) + '/' + original_filename
         else:
-            filename = filename_message_output
+            filename = filename_message_output + '.' + original_filename.split('.')[-1]
+
+        print(filename)
 
         with open(filename, "wb") as f:
             f.write(result)

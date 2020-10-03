@@ -12,10 +12,10 @@ from PyQt5 import QtCore, QtWidgets
 
 class imageLSB():
     def __init__(self):
-        self.mask_one = [1, 2]
+        self.mask_one = [1, 2, 4, 8, 16, 32, 64, 128]
         self.mask_or = self.mask_one.pop(0)
 
-        self.mask_zero = [254, 253]
+        self.mask_zero = [254, 253, 251, 247, 239, 223, 191, 127]
         self.mask_and = self.mask_zero.pop(0)
 
         self.curr_pos = 0
@@ -24,7 +24,19 @@ class imageLSB():
         self.encrypted = False
         self.randomized = False
 
+    def reset(self):
+        self.mask_one = [1, 2, 4, 8, 16, 32, 64, 128]
+        self.mask_or = self.mask_one.pop(0)
+
+        self.mask_zero = [254, 253, 251, 247, 239, 223, 191, 127]
+        self.mask_and = self.mask_zero.pop(0)
+
+        self.curr_pos = 0
+        self.curr_channel = 0
+
     def readImage(self, filename):
+        self.reset()
+
         try:
             image = cv2.imread(filename)
 
@@ -35,8 +47,6 @@ class imageLSB():
             self.size = self.width * self.height
             self.map = list(range(self.size))
         except Exception as exception:
-            # print(exception)
-            # print('Error while reading image file')
             return 'FAILED'
 
     def writeImage(self, filename):
@@ -56,7 +66,6 @@ class imageLSB():
                 self.curr_pos = 0
 
                 if (self.mask_or == 2):
-                    raise Exception('No available pixels remaining')
                     return 'FAILED'
                 else:
                     self.mask_or = self.mask_one.pop(0)
@@ -107,10 +116,8 @@ class imageLSB():
         data = len(content)
 
         if ((not self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 96)))):
-            # raise Exception('Image is smaller than payload')
             return 'FAILED'
         elif ((self.randomized) and ((self.width * self.height * self.channels) < (8 * (filedata + data + 128)))):
-            # raise Exception('Image is smaller than payload')
             return 'FAILED'
 
         if (self.encrypted):
@@ -143,11 +150,15 @@ class imageLSB():
         for byte in content:
             self.put_value(format(int(byte), '08b'))
 
+        old_filename = ntpath.basename(self.path).split('.')
+
         if (output == None):
-            old_filename = ntpath.basename(self.path).split('.')
-            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
-            self.writeImage('result/image/embed_' + filename)
+            output = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
+            print('output', output)
+            self.writeImage(output)
         else:
+            output += '.' + old_filename[1]
+            print('output', output)
             self.writeImage(output)
 
         return output
@@ -183,14 +194,14 @@ class imageLSB():
         old_filename = filename.split('.')
 
         if (output == None):
-            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
+            output = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
 
-            with open(filename, 'wb') as f:
+            with open(output, 'wb') as f:
                 f.write(content)
 
             if (encrypted == 22):
                 vig = Vigenere(key)
-                vig.decryptFile(filename, filename)
+                vig.decryptFile(output, output)
         else:
             output += '.' + old_filename[1]
 

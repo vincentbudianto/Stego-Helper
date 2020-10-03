@@ -26,8 +26,6 @@ class imageBPCS():
             self.image = image
             self.height, self.width, self.channels = image.shape
         except Exception as exception:
-            # print(exception)
-            # print('Error while reading image file')
             return 'FAILED'
 
     def writeImage(self, filename):
@@ -84,7 +82,6 @@ class imageBPCS():
         message = msg.set_message()
 
         if (((self.width // self.block_size) * (self.height // self.block_size) * self.channels) < len(message)):
-            # raise Exception('Image is smaller than payload')
             return 'FAILED'
 
         i = 0
@@ -120,11 +117,13 @@ class imageBPCS():
 
                 h += self.block_size
 
+        old_filename = ntpath.basename(self.path).split('.')
+
         if (output == None):
-            old_filename = ntpath.basename(self.path).split('.')
-            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
-            self.writeImage('result/image/embed_' + filename)
+            output = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
+            self.writeImage(output)
         else:
+            output += '.' + old_filename[1]
             self.writeImage(output)
 
         return output
@@ -166,14 +165,14 @@ class imageBPCS():
         old_filename = filename.split('.')
 
         if (output == None):
-            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
+            output = str(Path(self.path).parent) + '/' + old_filename[0] + '_extracted.' + old_filename[1]
 
-            with open(('result/image/extracted_' + filename), 'wb') as f:
+            with open(output, 'wb') as f:
                 f.write(content)
 
             if (encrypted):
                 vig = Vigenere(key)
-                vig.decryptFile(('result/image/extracted_' + filename), ('result/image/extracted_' + filename))
+                vig.decryptFile(output, output)
         else:
             output += '.' + old_filename[1]
 
