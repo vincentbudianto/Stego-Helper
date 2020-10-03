@@ -143,11 +143,13 @@ class imageLSB():
         for byte in content:
             self.put_value(format(int(byte), '08b'))
 
+        old_filename = ntpath.basename(self.path).split('.')
+
         if (output == None):
-            old_filename = ntpath.basename(self.path).split('.')
-            filename = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
-            self.writeImage('result/image/embed_' + filename)
+            output = str(Path(self.path).parent) + '/' + old_filename[0] + '_embedded.' + old_filename[1]
+            self.writeImage(output)
         else:
+            output += old_filename[1]
             self.writeImage(output)
 
         return output
