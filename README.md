@@ -38,7 +38,7 @@ Cara melakukan steganografi pada file audio dengan tipe .wav adalah dengan memul
 Program steganografi yang dibuat dapat memproses media file gambar, video, maupun audio. Selain itu, untuk menambahkan tingkat kompeksitas penyisipan pesan, program memiliki 2 fitur, yaitu :
 - __Enkripsi__ <br>
   program dapat melakukan enkripsi untuk file pesan dengan menggunakan metode vigenere cipher sebelum pesan disisipkan pada media file
-- Random
+- __Random__ <br>
   program dapat menyisipkan pesan secara acak untuk byte dari pesan, pada image dapat dilakukan random pada penyisipan dari posisi pixel, dan pada video juga dapat dilakukan random pada penyisipan dari posisi frame
 
 ### Opsi Aplikasi Steganografi
@@ -77,7 +77,7 @@ Program steganografi yang dibuat dapat memproses media file gambar, video, maupu
       - random : metode pengacakan untuk penyisipan bit pada byte video
 
 ### PSNR
-Program juga dapat menghitung nilai PSNR atau Peak Signal-to-Noise Ratio yang menunjukan perbandingan antara nlai maksimum dari sinyal yang diukur dengan besarnya dearu yang berpegaruh pada sinyal tersebut dan diukur dengan satuan desibel. Untuk menghitung PSNR gambar, dengan membandingkan perbedaan setiap pixel dari gambar, untuk video dengan menghitung rata-rata nilai psnr setiap frame dengan menggunakan perhitungan psnr gambar, sedangkan untuk menghitung PSNR audio dengan membandingkan setiap byte pada file audionya.
+Program juga dapat menghitung nilai PSNR atau Peak Signal-to-Noise Ratio yang menunjukkan perbandingan antara nilai maksimum dari sinyal yang diukur dengan besarnya dearu yang berpegaruh pada sinyal tersebut dan diukur dengan satuan desibel. Untuk menghitung PSNR gambar, dengan membandingkan perbedaan setiap pixel dari gambar, untuk video dengan menghitung rata-rata nilai PSNR setiap frame dengan menggunakan perhitungan PSNR gambar, sedangkan untuk menghitung PSNR audio dengan membandingkan setiap byte pada file audionya.
 
 ### Referensi
 - [Image Steganography using Python. Understanding LSB Image Steganography… | by Rupali Roy](https://towardsdatascience.com/hiding-data-in-an-image-image-steganography-using-python-e491b68b1372)
