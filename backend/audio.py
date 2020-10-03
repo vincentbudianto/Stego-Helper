@@ -4,7 +4,7 @@ import numpy as np
 import math
 import os
 
-from vigenere import Vigenere
+from .vigenere import Vigenere
 from pathlib import Path
 import ntpath
 

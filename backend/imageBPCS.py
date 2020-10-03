@@ -3,8 +3,8 @@ import math
 import numpy as np
 import random
 
-from messageBPCS import messageBPCS
-from vigenere import Vigenere
+from .messageBPCS import messageBPCS
+from .vigenere import Vigenere
 
 class imageBPCS():
     def __init__(self):

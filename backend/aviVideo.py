@@ -1,10 +1,9 @@
-import aviVideo
 import math
 import numpy as np
 import random
 
 from cv2 import cv2
-from vigenere import Vigenere
+from .vigenere import Vigenere
 
 from main import Ui_MainWindow
 from PyQt5 import QtCore, QtWidgets
@@ -383,7 +382,7 @@ class AviStegano():
         self.verticalLayout_6.addWidget(self.groupBox_4)
         self.horizontalLayout.addWidget(self.widget_3)
 
-        self.retranslateUi(Form)
+        self.retranslateUi()
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate

@@ -3,7 +3,7 @@ import math
 import numpy as np
 import random
 
-from vigenere import Vigenere
+from .vigenere import Vigenere
 
 class imageLSB():
     def __init__(self):
