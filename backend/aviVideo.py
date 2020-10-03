@@ -400,6 +400,7 @@ class AviStegano():
 
         self.retranslateUi()
 
+        self.lineEdit.setMaxLength(25)
         self.checkBox.stateChanged.connect(self.enable_encryption)
         self.checkBox_3.stateChanged.connect(self.enable_randomized_frame)
         self.checkBox_2.stateChanged.connect(self.enable_randomized_pixel)

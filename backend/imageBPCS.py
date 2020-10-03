@@ -252,6 +252,7 @@ class imageBPCS():
 
         self.retranslateUi()
 
+        self.key_input_text.setMaxLength(25)
         self.encryption_checkbox.stateChanged.connect(self.enable_encrypted)
         self.randomized_checkbox.stateChanged.connect(self.enable_randomized)
 
