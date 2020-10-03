@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'image_bpcs.ui'
+# Form implementation generated from reading ui file 'audio.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -17,11 +17,11 @@ class Ui_Form(object):
         Form.resize(400, 300)
         self.horizontalLayout = QtWidgets.QHBoxLayout(Form)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.image_bpcs_widget = QtWidgets.QWidget(Form)
-        self.image_bpcs_widget.setObjectName("image_bpcs_widget")
-        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.image_bpcs_widget)
+        self.audio_widget = QtWidgets.QWidget(Form)
+        self.audio_widget.setObjectName("audio_widget")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.audio_widget)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.widget = QtWidgets.QWidget(self.image_bpcs_widget)
+        self.widget = QtWidgets.QWidget(self.audio_widget)
         self.widget.setObjectName("widget")
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.widget)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
@@ -42,15 +42,7 @@ class Ui_Form(object):
         self.verticalLayout_4.addWidget(self.randomized_checkbox)
         self.horizontalLayout_5.addWidget(self.groupBox_3)
         self.verticalLayout_6.addWidget(self.widget)
-        self.groupBox_2 = QtWidgets.QGroupBox(self.image_bpcs_widget)
-        self.groupBox_2.setObjectName("groupBox_2")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox_2)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.threshold_input_text = QtWidgets.QLineEdit(self.groupBox_2)
-        self.threshold_input_text.setObjectName("threshold_input_text")
-        self.verticalLayout.addWidget(self.threshold_input_text)
-        self.verticalLayout_6.addWidget(self.groupBox_2)
-        self.groupBox_4 = QtWidgets.QGroupBox(self.image_bpcs_widget)
+        self.groupBox_4 = QtWidgets.QGroupBox(self.audio_widget)
         self.groupBox_4.setObjectName("groupBox_4")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_4)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
@@ -58,7 +50,7 @@ class Ui_Form(object):
         self.key_input_text.setObjectName("key_input_text")
         self.horizontalLayout_2.addWidget(self.key_input_text)
         self.verticalLayout_6.addWidget(self.groupBox_4)
-        self.horizontalLayout.addWidget(self.image_bpcs_widget)
+        self.horizontalLayout.addWidget(self.audio_widget)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -69,6 +61,5 @@ class Ui_Form(object):
         self.groupBox.setTitle(_translate("Form", "Encryption"))
         self.encryption_checkbox.setText(_translate("Form", "Enable"))
         self.groupBox_3.setTitle(_translate("Form", "Random"))
-        self.randomized_checkbox.setText(_translate("Form", "Randomized Pixel"))
-        self.groupBox_2.setTitle(_translate("Form", "Threshold (0.1 - 0.5)"))
+        self.randomized_checkbox.setText(_translate("Form", "Randomized"))
         self.groupBox_4.setTitle(_translate("Form", "Key"))

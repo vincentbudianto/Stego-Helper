@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'image_bpcs.ui'
+# Form implementation generated from reading ui file 'video.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -14,14 +14,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(400, 300)
+        Form.resize(461, 265)
         self.horizontalLayout = QtWidgets.QHBoxLayout(Form)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.image_bpcs_widget = QtWidgets.QWidget(Form)
-        self.image_bpcs_widget.setObjectName("image_bpcs_widget")
-        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.image_bpcs_widget)
+        self.video_widget = QtWidgets.QWidget(Form)
+        self.video_widget.setObjectName("video_widget")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.video_widget)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.widget = QtWidgets.QWidget(self.image_bpcs_widget)
+        self.widget = QtWidgets.QWidget(self.video_widget)
         self.widget.setObjectName("widget")
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.widget)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
@@ -37,20 +37,15 @@ class Ui_Form(object):
         self.groupBox_3.setObjectName("groupBox_3")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.groupBox_3)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
-        self.randomized_checkbox = QtWidgets.QCheckBox(self.groupBox_3)
-        self.randomized_checkbox.setObjectName("randomized_checkbox")
-        self.verticalLayout_4.addWidget(self.randomized_checkbox)
+        self.randomized_frame_button = QtWidgets.QCheckBox(self.groupBox_3)
+        self.randomized_frame_button.setObjectName("randomized_frame_button")
+        self.verticalLayout_4.addWidget(self.randomized_frame_button)
+        self.randomized_pixel_button = QtWidgets.QCheckBox(self.groupBox_3)
+        self.randomized_pixel_button.setObjectName("randomized_pixel_button")
+        self.verticalLayout_4.addWidget(self.randomized_pixel_button)
         self.horizontalLayout_5.addWidget(self.groupBox_3)
         self.verticalLayout_6.addWidget(self.widget)
-        self.groupBox_2 = QtWidgets.QGroupBox(self.image_bpcs_widget)
-        self.groupBox_2.setObjectName("groupBox_2")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox_2)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.threshold_input_text = QtWidgets.QLineEdit(self.groupBox_2)
-        self.threshold_input_text.setObjectName("threshold_input_text")
-        self.verticalLayout.addWidget(self.threshold_input_text)
-        self.verticalLayout_6.addWidget(self.groupBox_2)
-        self.groupBox_4 = QtWidgets.QGroupBox(self.image_bpcs_widget)
+        self.groupBox_4 = QtWidgets.QGroupBox(self.video_widget)
         self.groupBox_4.setObjectName("groupBox_4")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_4)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
@@ -58,7 +53,7 @@ class Ui_Form(object):
         self.key_input_text.setObjectName("key_input_text")
         self.horizontalLayout_2.addWidget(self.key_input_text)
         self.verticalLayout_6.addWidget(self.groupBox_4)
-        self.horizontalLayout.addWidget(self.image_bpcs_widget)
+        self.horizontalLayout.addWidget(self.video_widget)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -69,6 +64,6 @@ class Ui_Form(object):
         self.groupBox.setTitle(_translate("Form", "Encryption"))
         self.encryption_checkbox.setText(_translate("Form", "Enable"))
         self.groupBox_3.setTitle(_translate("Form", "Random"))
-        self.randomized_checkbox.setText(_translate("Form", "Randomized Pixel"))
-        self.groupBox_2.setTitle(_translate("Form", "Threshold (0.1 - 0.5)"))
+        self.randomized_frame_button.setText(_translate("Form", "Randomized Frame"))
+        self.randomized_pixel_button.setText(_translate("Form", "Randomized Pixel"))
         self.groupBox_4.setTitle(_translate("Form", "Key"))

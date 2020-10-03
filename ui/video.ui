@@ -15,7 +15,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QWidget" name="widget_3" native="true">
+    <widget class="QWidget" name="video_widget" native="true">
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
        <widget class="QWidget" name="widget" native="true">
@@ -27,7 +27,7 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="QCheckBox" name="checkBox">
+             <widget class="QCheckBox" name="encryption_checkbox">
               <property name="text">
                <string>Enable</string>
               </property>
@@ -43,14 +43,14 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QCheckBox" name="checkBox_3">
+             <widget class="QCheckBox" name="randomized_frame_button">
               <property name="text">
                <string>Randomized Frame</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox_2">
+             <widget class="QCheckBox" name="randomized_pixel_button">
               <property name="text">
                <string>Randomized Pixel</string>
               </property>
@@ -69,7 +69,7 @@
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QLineEdit" name="lineEdit"/>
+          <widget class="QLineEdit" name="key_input_text"/>
          </item>
         </layout>
        </widget>
