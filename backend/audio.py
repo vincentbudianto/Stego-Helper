@@ -32,7 +32,7 @@ class Audio():
         self.mask_zero = [254, 253, 251, 247, 239]
         self.mask_and = self.mask_zero.pop(0)
         self.curr_byte = 0
-    
+
     def read_container_file(self, container_file_path):
         self.container_file_path = container_file_path
         self.container_file_audio = wave.open(self.container_file_path, "r")
@@ -41,7 +41,7 @@ class Audio():
         self.container_file_bytes = bytearray(list(self.container_file_audio.readframes(self.container_file_length)))
         self.container_file_length = len(self.container_file_bytes)
         print(self.container_file_length)
-    
+
     def read_input_file(self, input_file_path):
         self.input_file_path = input_file_path
         self.input_file_name = ntpath.basename(input_file_path)
@@ -169,7 +169,7 @@ class Audio():
             random.shuffle(self.byte_map)
             for i in range(15, -1, -1):
                 self.byte_map.insert(0, i)
-                
+
         filename_size = self.read_bits(64)
         content_size = self.read_bits(64)
 
@@ -187,7 +187,7 @@ class Audio():
         print("Writing output")
         if output_file_name == None:
             output_file_name = filename.decode()
-        
+
         output_file_path = str(Path(self.container_file_path).parent) + "/" + output_file_name
         save_file(output_file_path, content)
 

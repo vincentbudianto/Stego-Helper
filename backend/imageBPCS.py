@@ -16,11 +16,10 @@ class imageBPCS():
 
             self.image = image
             self.height, self.width, self.channels = image.shape
-            self.size = self.width * self.height
-            self.map = list(range(self.size))
         except Exception as exception:
-            print(exception)
-            print('Error while reading image file')
+            # print(exception)
+            # print('Error while reading image file')
+            return 'FAILED - Error while reading image file'
 
     def writeImage(self, filename):
         cv2.imwrite(filename, self.image)
@@ -72,8 +71,9 @@ class imageBPCS():
 
         message = msg.set_message()
 
-        if ((self.width * self.height * self.channels) < len(message)):
-            raise Exception('Image is smaller than payload')
+        if (((self.width // self.block_size) * (self.height // self.block_size) * self.channels) < len(message)):
+            # raise Exception('Image is smaller than payload')
+            return 'FAILED - Image is smaller than payload'
 
         i = 0
 
@@ -180,14 +180,14 @@ if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
     bpcse = imageBPCS()
     bpcse.readImage('test/image/input.png')
-    res_encode = bpcse.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
+    res_encode = bpcse.embed(path = 'test/image/secret.txt', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
     # res_encode = bpcse.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/resBPCS.png', encrypted = False, randomized = False)
 
     print('<<<<< extract >>>>>>')
     bpcsd = imageBPCS()
     bpcsd.readImage('result/image/resBPCS.png')
 
-    filename = bpcsd.extract(key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/test.txt')
+    filename = bpcsd.extract(key = 'STEGANOGRAPHY', threshold = 0.3, output = 'result/image/secret.txt')
 
     print('res_decode filename :', filename)
 
