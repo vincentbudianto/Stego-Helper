@@ -64,7 +64,8 @@ class imageBPCS():
     def from_bitplane(self, bitplane):
         return self.to_byte(bitplane, (len(bitplane) - 1))
 
-    def embed(self, path, key, threshold = 0.3, output = ''):
+    def embed(self, path, threshold = 0.3, output = ''):
+        key = self.key_input_text.text()
         if (self.encrypted):
             vig = Vigenere(key)
             content = vig.encryptFile(path)
@@ -121,7 +122,9 @@ class imageBPCS():
 
         return output
 
-    def extract(self, key, threshold = 0.3, output = ''):
+    def extract(self, threshold = 0.3, output = ''):
+        key = self.key_input_text.text()
+        
         msg = messageBPCS(key = key, threshold = threshold, block_size = self.block_size)
         message = []
 

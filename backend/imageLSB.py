@@ -95,7 +95,8 @@ class imageLSB():
             self.image[x, y] = tuple(val)
             self.next_pos()
 
-    def embed(self, path, key, output = ''):
+    def embed(self, path, output = ''):
+        key = self.key_input_text.text()
         filename = path.split('/')[-1]
         filedata = len(filename)
         content = open(path, 'rb').read()
@@ -145,7 +146,9 @@ class imageLSB():
 
         return output
 
-    def extract(self, key, output = ''):
+    def extract(self, output = ''):
+        key = self.key_input_text.text()
+
         encrypted = self.read_bits(8)
         randomized = self.read_bits(8)
         seed = sum(ord(k) for k in key)
