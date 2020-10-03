@@ -84,14 +84,17 @@ class AviVideo():
 
 class AviStegano():
     def __init__(self):
+        self.reset_init()
+
+    def reset_init(self):
         #Read aviVideo
         self.aviVideo = None
         self.frames = 0
 
-        self.mask_one = [1, 2, 4, 8, 16, 32, 64, 128]
+        self.mask_one = [1, 2]
         self.mask_or = self.mask_one.pop(0)
 
-        self.mask_zero = [254, 253, 251, 247, 239, 223, 191, 127]
+        self.mask_zero = [254, 253]
         self.mask_and = self.mask_zero.pop(0)
 
         #Video Data Size
@@ -118,6 +121,7 @@ class AviStegano():
         self.randomized_pixel = False
 
     def readVideo(self, video_filename):
+        self.reset_init()
         #Read aviVideo
         self.aviVideo = AviVideo()
         self.aviVideo.readVideo(video_filename)
@@ -154,7 +158,7 @@ class AviStegano():
                 if (self.curr_frame == (self.frame_size - self.skipped_frame - 1)):
                     self.curr_frame = self.skipped_frame
 
-                    if (self.mask_or == 128):
+                    if (self.mask_or == 2):
                         raise Exception('No available pixels remaining')
                     else:
                         self.mask_or = self.mask_one.pop(0)
@@ -253,11 +257,11 @@ class AviStegano():
                 random.shuffle(self.map)
 
         if (self.randomized_frame or self.randomized_pixel):
-            if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < (filedata + data)):
+            if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < 8 * (filedata + data)):
                 # raise Exception('Video is smaller than payload')
                 return 'FAILED'
         else:
-            if ((self.frame_size * self.width_size * self.height_size * self.channel_size) < (filedata + data + 104)):
+            if ((self.frame_size * self.width_size * self.height_size * self.channel_size) < 8 * (filedata + data + 104)):
                 # raise Exception('Video is smaller than payload')
                 return 'FAILED'
 
