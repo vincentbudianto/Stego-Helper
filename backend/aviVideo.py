@@ -84,6 +84,9 @@ class AviVideo():
 
 class AviStegano():
     def __init__(self):
+        self.reset_init()
+
+    def reset_init(self):
         #Read aviVideo
         self.aviVideo = None
         self.frames = 0
@@ -118,6 +121,7 @@ class AviStegano():
         self.randomized_pixel = False
 
     def readVideo(self, video_filename):
+        self.reset_init()
         #Read aviVideo
         self.aviVideo = AviVideo()
         self.aviVideo.readVideo(video_filename)
