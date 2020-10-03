@@ -16,7 +16,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def __init__(self):
-        self.stego = Audio()
+        self.stego = imageLSB()
         self.stego_list = [
             imageLSB(),
             imageBPCS(),

@@ -6,6 +6,9 @@ import random
 from .messageBPCS import messageBPCS
 from .vigenere import Vigenere
 
+from main import Ui_MainWindow
+from PyQt5 import QtCore, QtWidgets
+
 class imageBPCS():
     def __init__(self):
         self.block_size = 8
@@ -175,6 +178,61 @@ class imageBPCS():
         psnr = 20 * math.log10(max_pixel / math.sqrt(mse))
 
         return psnr
+    
+    def render(self, window:Ui_MainWindow):
+        self.image_bpcs_widget = QtWidgets.QWidget(window.option_frame)
+        self.image_bpcs_widget.setObjectName("image_bpcs_widget")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.image_bpcs_widget)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.widget = QtWidgets.QWidget(self.image_bpcs_widget)
+        self.widget.setObjectName("widget")
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.widget)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.groupBox = QtWidgets.QGroupBox(self.widget)
+        self.groupBox.setObjectName("groupBox")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.groupBox)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.encryption_checkbox = QtWidgets.QCheckBox(self.groupBox)
+        self.encryption_checkbox.setObjectName("encryption_checkbox")
+        self.verticalLayout_2.addWidget(self.encryption_checkbox)
+        self.horizontalLayout_5.addWidget(self.groupBox)
+        self.groupBox_3 = QtWidgets.QGroupBox(self.widget)
+        self.groupBox_3.setObjectName("groupBox_3")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.groupBox_3)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.randomized_checkbox = QtWidgets.QCheckBox(self.groupBox_3)
+        self.randomized_checkbox.setObjectName("randomized_checkbox")
+        self.verticalLayout_4.addWidget(self.randomized_checkbox)
+        self.horizontalLayout_5.addWidget(self.groupBox_3)
+        self.verticalLayout_6.addWidget(self.widget)
+        self.groupBox_2 = QtWidgets.QGroupBox(self.image_bpcs_widget)
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox_2)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.threshold_input_text = QtWidgets.QLineEdit(self.groupBox_2)
+        self.threshold_input_text.setObjectName("threshold_input_text")
+        self.verticalLayout.addWidget(self.threshold_input_text)
+        self.verticalLayout_6.addWidget(self.groupBox_2)
+        self.groupBox_4 = QtWidgets.QGroupBox(self.image_bpcs_widget)
+        self.groupBox_4.setObjectName("groupBox_4")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_4)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.key_input_text = QtWidgets.QLineEdit(self.groupBox_4)
+        self.key_input_text.setObjectName("key_input_text")
+        self.horizontalLayout_2.addWidget(self.key_input_text)
+        self.verticalLayout_6.addWidget(self.groupBox_4)
+        window.horizontalLayout_4.addWidget(self.image_bpcs_widget)
+
+        self.retranslateUi()
+        
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.groupBox.setTitle(_translate("MainWindow", "Encryption"))
+        self.encryption_checkbox.setText(_translate("MainWindow", "Enable"))
+        self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
+        self.randomized_checkbox.setText(_translate("MainWindow", "Randomized Pixel"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "Threshold (0.1 - 0.5)"))
+        self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
 if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
