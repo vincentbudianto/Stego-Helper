@@ -235,7 +235,7 @@ class imageLSB():
         window.horizontalLayout_4.addWidget(self.image_lsb_widget)
 
         self.retranslateUi()
-        
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.groupBox.setTitle(_translate("MainWindow", "Encryption"))
@@ -248,13 +248,15 @@ if __name__ == '__main__':
     print('<<<<< embed >>>>>>')
     lsbe = imageLSB()
     lsbe.readImage('test/image/input.png')
-
     res_encode = lsbe.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png', encrypted = False, randomized = False)
-    # res_encode = lsbe.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.png', encrypted = False, randomized = False)
+    # lsbe.readImage('test/image/input.bmp')
+    # res_encode = lsbe.embed(path = 'test/image/test.txt', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.bmp', encrypted = False, randomized = False)
+    # res_encode = lsbe.embed(path = 'test/image/mask.png', key = 'STEGANOGRAPHY', output = 'result/image/resLSB.bmp', encrypted = False, randomized = False)
 
     print('<<<<< extract >>>>>>')
     lsbd = imageLSB()
     lsbd.readImage('result/image/resLSB.png')
+    # lsbd.readImage('result/image/resLSB.bmp')
 
     filename = lsbd.extract(key = 'STEGANOGRAPHY', output = 'result/image/test.txt')
 
@@ -264,4 +266,6 @@ if __name__ == '__main__':
     lsb = imageLSB()
     image_one = cv2.imread('test/image/input.png')
     image_two = cv2.imread('result/image/resLSB.png')
+    # image_one = cv2.imread('test/image/input.bmp')
+    # image_two = cv2.imread('result/image/resLSB.bmp')
     print('psnr :', lsb.psnr(image_one, image_two))
