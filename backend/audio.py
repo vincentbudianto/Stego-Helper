@@ -258,7 +258,7 @@ class Audio():
         self.checkBox.stateChanged.connect(self.encrypted_mode)
         self.checkBox_2.stateChanged.connect(self.randomized_mode)
 
-
+        self.lineEdit.setMaxLength(25)
         self.checkBox.stateChanged.connect(self.enable_encrypted)
         self.checkBox_2.stateChanged.connect(self.enable_randomized)
 
