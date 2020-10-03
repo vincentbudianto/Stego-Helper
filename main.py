@@ -1,7 +1,7 @@
 import mimetypes
 
 from backend import *
-import os
+import os, sys, subprocess
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -151,16 +151,32 @@ class Ui_MainWindow(object):
         self.menuStegonya_Meyer.setTitle(_translate("MainWindow", "Stegonya Meyer"))
 
     def open_initial_file(self):
+        print(self.file_name)
         if self.file_name == "":
             self.info_text.setPlainText("Initial file is still empty")
         else:
-            os.startfile(self.file_name)
+            try:
+                if sys.platform == "win32":
+                    os.startfile(self.file_name)
+                else:
+                    opener ="open" if sys.platform == "darwin" else "xdg-open"
+                    subprocess.call([opener, self.file_name])
+            except:
+                self.info_text.setPlainText("Initial file is not found")
 
     def open_result_file(self):
+        print(self.result_file_path)
         if self.result_file_path == "":
             self.info_text.setPlainText("Result file is still empty")
         else:
-            os.startfile(self.result_file_path)
+            try:
+                if sys.platform == "win32":
+                    os.startfile(self.result_file_path)
+                else:
+                    opener ="open" if sys.platform == "darwin" else "xdg-open"
+                    subprocess.call([opener, self.result_file_path])
+            except:
+                self.info_text.setPlainText("Result file is not found")
 
     def clean(self, layout):
         for i in reversed(range(layout.count())):
