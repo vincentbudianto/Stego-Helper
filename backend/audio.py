@@ -100,7 +100,7 @@ class Audio():
         content = self.input_file_bytes
 
         # Limiting LSB into last 2 bits
-        if self.container_file_length < 8 * (152 + inputfilename_size + inputfile_size):
+        if self.container_file_length < 8 * (144 + inputfilename_size + inputfile_size):
             return 'FAILED'
 
         if self.is_encrypted:
