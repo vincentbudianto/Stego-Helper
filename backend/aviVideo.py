@@ -265,7 +265,7 @@ class AviStegano():
                 # raise Exception('Video is smaller than payload')
                 return 'FAILED'
 
-        self.put_value(format(filedata, '032b'))
+        self.put_value(format(filedata, '016b'))
         self.put_value(format(data, '064b'))
 
         for byte in message_file_name:
