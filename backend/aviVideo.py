@@ -317,7 +317,7 @@ class AviStegano():
                 print('Randomized Pixel')
                 random.shuffle(self.map)
 
-        filedata = self.read_bits(32)
+        filedata = self.read_bits(16)
         filename = bytearray()
 
         print('filedata',filedata)
