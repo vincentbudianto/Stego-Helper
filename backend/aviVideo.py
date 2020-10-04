@@ -208,16 +208,7 @@ class AviStegano():
     def embeed(self, message_file_name, output_filename):
         #Set AviStegano Metadata
         key = self.lineEdit.text()
-        mbit = self.bit_input_text.text()
         seed = sum(ord(k) for k in key)
-
-        if (mbit == ''):
-            mbit = 7
-        else:
-            mbit = int(mbit)
-
-            if ((mbit > 7) or (mbit < 1)):
-                mbit = 7
 
         filedata = len(message_file_name)
         content = open(message_file_name, "rb").read()
@@ -266,10 +257,10 @@ class AviStegano():
                 random.shuffle(self.map)
 
         if (self.randomized_frame or self.randomized_pixel):
-            if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < ((8 - mbit) * (filedata + data))):
+            if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < (filedata + data)):
                 return 'FAILED'
         else:
-            if ((self.frame_size * self.width_size * self.height_size * self.channel_size) < ((8 - mbit) * (filedata + data + 104))):
+            if ((self.frame_size * self.width_size * self.height_size * self.channel_size) < (filedata + data + 104)):
                 return 'FAILED'
 
         self.put_value(format(filedata, '016b'))
@@ -396,13 +387,6 @@ class AviStegano():
         self.horizontalLayout_5.addWidget(self.groupBox_3)
         self.verticalLayout_6.addWidget(self.widget)
         self.groupBox_2 = QtWidgets.QGroupBox(self.widget_3)
-        self.groupBox_2.setObjectName("groupBox_2")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox_2)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.bit_input_text = QtWidgets.QLineEdit(self.groupBox_2)
-        self.bit_input_text.setObjectName("bit_input_text")
-        self.verticalLayout.addWidget(self.bit_input_text)
-        self.verticalLayout_6.addWidget(self.groupBox_2)
         self.groupBox_4 = QtWidgets.QGroupBox(self.widget_3)
         self.groupBox_4.setObjectName("groupBox_4")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_4)
@@ -416,7 +400,6 @@ class AviStegano():
         self.retranslateUi()
 
         self.lineEdit.setMaxLength(25)
-        self.bit_input_text.setMaxLength(1)
         self.checkBox.stateChanged.connect(self.enable_encryption)
         self.checkBox_3.stateChanged.connect(self.enable_randomized_frame)
         self.checkBox_2.stateChanged.connect(self.enable_randomized_pixel)
@@ -428,7 +411,6 @@ class AviStegano():
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.checkBox_3.setText(_translate("MainWindow", "Randomized Frame"))
         self.checkBox_2.setText(_translate("MainWindow", "Randomized Pixel"))
-        self.groupBox_2.setTitle(_translate("MainWindow", "m-bit (0 < m < 8)"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
     def enable_encryption(self, state):
