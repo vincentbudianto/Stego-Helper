@@ -113,12 +113,12 @@ class imageLSB():
         mbit = self.bit_input_text.text()
 
         if (mbit == ''):
-            mbit = 7
+            mbit = 8
         else:
             mbit = int(mbit)
 
-            if ((mbit < 1) or (mbit > 7)):
-                mbit = 7
+            if ((mbit < 1) or (mbit > 8)):
+                mbit = 8
 
         print('mbit:', mbit)
 
@@ -127,9 +127,9 @@ class imageLSB():
         content = open(path, 'rb').read()
         data = len(content)
 
-        if ((not self.randomized) and ((self.width * self.height * self.channels) < round((8 * (filedata + data + 96)) / mbit))):
+        if ((not self.randomized) and ((self.width * self.height * self.channels) < round(8 * (filedata + data + 96) / mbit))):
             return 'FAILED'
-        elif ((self.randomized) and ((self.width * self.height * self.channels) < round((8 * (filedata + data + 128)) / mbit))):
+        elif ((self.randomized) and ((self.width * self.height * self.channels) < round(8 * (filedata + data + 128) / mbit))):
             return 'FAILED'
 
         if (self.encrypted):
@@ -300,7 +300,7 @@ class imageLSB():
         self.encryption_checkbox.setText(_translate("MainWindow", "Enable"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.randomized_checkbox.setText(_translate("MainWindow", "Randomized Pixel"))
-        self.groupBox_2.setTitle(_translate("MainWindow", "m-bit (0 < m < 8)"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "m-bit (1 <= m <= 8)"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
     def enable_encrypted(self, state):

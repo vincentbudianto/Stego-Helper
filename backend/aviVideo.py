@@ -80,7 +80,7 @@ class AviVideo():
             fourcc = cv2.VideoWriter_fourcc('R', 'G', 'B', 'A')     # 4-byte code used to specify the video codec.
         else:
             fourcc = cv2.VideoWriter_fourcc('M', 'P', 'N', 'G')     # 4-byte code used to specify the video codec.
-            
+
         video_output = cv2.VideoWriter(filename_output, fourcc, self.fps, (self.width, self.height))
         for frame in self.frames:
             video_output.write(frame)
@@ -217,12 +217,12 @@ class AviStegano():
         mbit = self.bit_input_text.text()
 
         if (mbit == ''):
-            mbit = 7
+            mbit = 8
         else:
             mbit = int(mbit)
 
-            if ((mbit < 1) or (mbit > 7)):
-                mbit = 7
+            if ((mbit < 1) or (mbit > 8)):
+                mbit = 8
 
         filedata = len(message_file_name)
         content = open(message_file_name, "rb").read()
@@ -443,7 +443,7 @@ class AviStegano():
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.checkBox_3.setText(_translate("MainWindow", "Randomized Frame"))
         self.checkBox_2.setText(_translate("MainWindow", "Randomized Pixel"))
-        self.groupBox_2.setTitle(_translate("MainWindow", "m-bit (0 < m < 8)"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "m-bit (1 <= m <= 8)"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
     def enable_encryption(self, state):

@@ -288,7 +288,7 @@ class Audio():
         self.checkBox.setText(_translate("MainWindow", "Enable"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.checkBox_2.setText(_translate("MainWindow", "Randomized"))
-        self.groupBox_5.setTitle(_translate("MainWindow", "m-bit (0 < m < 5)"))
+        self.groupBox_5.setTitle(_translate("MainWindow", "m-bit (1 <= m <= 4)"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
     def encrypted_mode(self, state):
