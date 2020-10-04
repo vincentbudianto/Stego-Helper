@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import random
-import sys
+import sys, subprocess
 
 from cv2 import cv2
 from .vigenere import Vigenere
@@ -20,6 +20,11 @@ class AviVideo():
         self.fps = 0
         self.width = 0
         self.height = 0
+
+        if sys.platform == "win32":
+            self.ffmpeg_cmd = 'ffmpeg.exe'
+        else:
+            self.ffmpeg_cmd = 'ffmpeg'
 
     def setFilename(self, filename):
         self.filename = filename
@@ -71,20 +76,38 @@ class AviVideo():
             video.release()
             self.frames = frames
 
+            cmd = self.ffmpeg_cmd + ' -i ' + filename_input + ' -vn -acodec copy ' + filename_input + '_audio.wav'
+            print(cmd)
+            subprocess.call(cmd, shell=True)
+            # input_audio = ffmpeg.input(filename_input)
+            # self.audio = input_audio.audio()
+
         except Exception as exception:
             print(exception)
             print("Error while reading video file")
 
     def writeVideo(self, filename_output):
+        temp_filename = filename_output.split('.')
+        filename = temp_filename[0] + '_temp.' + temp_filename[1]
+
         if sys.platform == "win32":
             fourcc = cv2.VideoWriter_fourcc('R', 'G', 'B', 'A')     # 4-byte code used to specify the video codec.
         else:
             fourcc = cv2.VideoWriter_fourcc('M', 'P', 'N', 'G')     # 4-byte code used to specify the video codec.
             
-        video_output = cv2.VideoWriter(filename_output, fourcc, self.fps, (self.width, self.height))
+        video_output = cv2.VideoWriter(filename, fourcc, self.fps, (self.width, self.height))
         for frame in self.frames:
             video_output.write(frame)
         video_output.release()
+
+        cmd1 = self.ffmpeg_cmd + ' -i ' + filename + ' -i ' + self.filename + '_audio.wav -c:v copy -c:a aac ' + filename_output
+        print(cmd1)
+        subprocess.call(cmd1, shell=True)
+
+        cmd2 = 'rm ' + self.filename + '_audio.wav ' + filename
+        print(cmd2)
+        subprocess.call(cmd2, shell=True)
+
         return
 
 class AviStegano():
