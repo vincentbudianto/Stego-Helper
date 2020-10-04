@@ -54,7 +54,7 @@ class Audio():
         if (self.curr_byte == (self.container_file_length - 1)):
             self.curr_byte = 0
 
-            if (self.mask_or == 2):
+            if (self.mask_or == 16):
                 raise Exception("No available pixels remaining")
             else:
                 self.mask_or = self.mask_one.pop(0)
