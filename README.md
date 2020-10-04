@@ -2,8 +2,14 @@
 
 Aplikasi steganografi sederhana yang dibangun dengan menggunakan bahasa pemrograman python.
 
+### Requirement:
+- python 3.*
+- pip / conda
+- ffmpeg
+
 ### Instalasi Environment
 ```
+$ sudo apt install ffmpeg
 $ conda env create -n stego-helper -f env.yml
 ```
 
