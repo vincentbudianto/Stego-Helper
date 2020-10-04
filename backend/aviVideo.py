@@ -75,7 +75,7 @@ class AviVideo():
             print("Error while reading video file")
 
     def writeVideo(self, filename_output):
-        fourcc = cv2.VideoWriter_fourcc('M', 'P', 'N', 'G')     # 4-byte code used to specify the video codec.
+        fourcc = cv2.VideoWriter_fourcc('R', 'G', 'B', 'A')     # 4-byte code used to specify the video codec.
         video_output = cv2.VideoWriter(filename_output, fourcc, self.fps, (self.width, self.height))
         for frame in self.frames:
             video_output.write(frame)
