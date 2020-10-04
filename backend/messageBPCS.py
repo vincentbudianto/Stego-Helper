@@ -78,13 +78,15 @@ class messageBPCS():
     def complexity(self, bitplane):
         count = 0
 
-        for h in range(self.block_size - 1):
-            for w in range(self.block_size - 1):
-                if(bitplane[h][w] != bitplane[h + 1][w]):
-                    count += 1
+        for h in range(self.block_size):
+            for w in range(self.block_size):
+                if (h != (self.block_size - 1)):
+                    if(bitplane[h][w] != bitplane[h + 1][w]):
+                        count += 1
 
-                if(bitplane[h][w] != bitplane[h][w + 1]):
-                    count += 1
+                if (h != (self.block_size - 1)):
+                    if(bitplane[h][w] != bitplane[h][w + 1]):
+                        count += 1
 
         return count / 112
 

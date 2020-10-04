@@ -35,13 +35,15 @@ class imageBPCS():
         count = 0
         height, width = block.shape
 
-        for h in range(height - 1):
-            for w in range(width - 1):
-                if (block[h][w] != block[h + 1][w]):
-                    count += 1
+        for h in range(height):
+            for w in range(width):
+                if (h != (height - 1)):
+                    if (block[h][w] != block[h + 1][w]):
+                        count += 1
 
-                if (block[h][w] != block[h][w + 1]):
-                    count += 1
+                if (w != (width - 1)):
+                    if (block[h][w] != block[h][w + 1]):
+                        count += 1
 
         return count / 112
 
