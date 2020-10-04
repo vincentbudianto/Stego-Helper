@@ -8,7 +8,7 @@ from pathlib import Path
 import ntpath
 
 from main import Ui_MainWindow
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 class imageLSB():
     def __init__(self):
@@ -117,7 +117,7 @@ class imageLSB():
         else:
             mbit = int(mbit)
 
-            if ((mbit > 7) or (mbit < 1)):
+            if ((mbit < 1) or (mbit > 7)):
                 mbit = 7
 
         print('mbit:', mbit)
@@ -288,6 +288,8 @@ class imageLSB():
         self.retranslateUi()
 
         self.key_input_text.setMaxLength(25)
+        self.onlyInt = QtGui.QIntValidator(1, 7)
+        self.bit_input_text.setValidator(self.onlyInt)
         self.bit_input_text.setMaxLength(1)
         self.encryption_checkbox.stateChanged.connect(self.enable_encrypted)
         self.randomized_checkbox.stateChanged.connect(self.enable_randomized)
