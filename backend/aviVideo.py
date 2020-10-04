@@ -6,7 +6,7 @@ from cv2 import cv2
 from .vigenere import Vigenere
 
 from main import Ui_MainWindow
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 FLAG_TRUE = 22
 FLAG_FALSE = 11
@@ -209,6 +209,15 @@ class AviStegano():
         #Set AviStegano Metadata
         key = self.lineEdit.text()
         seed = sum(ord(k) for k in key)
+        mbit = self.bit_input_text.text()
+
+        if (mbit == ''):
+            mbit = 7
+        else:
+            mbit = int(mbit)
+
+            if ((mbit < 1) or (mbit > 7)):
+                mbit = 7
 
         filedata = len(message_file_name)
         content = open(message_file_name, "rb").read()
@@ -257,10 +266,10 @@ class AviStegano():
                 random.shuffle(self.map)
 
         if (self.randomized_frame or self.randomized_pixel):
-            if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < (filedata + data)):
+            if (((self.frame_size - self.skipped_frame) * self.width_size * self.height_size * self.channel_size) < round((8 * (filedata + data)) / mbit)):
                 return 'FAILED'
         else:
-            if ((self.frame_size * self.width_size * self.height_size * self.channel_size) < (filedata + data + 104)):
+            if ((self.frame_size * self.width_size * self.height_size * self.channel_size) < round((8 * (filedata + data + 104)) / mbit)):
                 return 'FAILED'
 
         self.put_value(format(filedata, '016b'))
@@ -280,8 +289,11 @@ class AviStegano():
         key = self.lineEdit.text()
 
         encription = self.read_bits(8)
+        print('encription', encription)
         randomized_frame = self.read_bits(8)
+        print('randomized_frame', randomized_frame)
         randomized_pixel = self.read_bits(8)
+        print('randomized_pixel', randomized_pixel)
 
         if (randomized_frame == 22 or randomized_pixel == 22):
             seed = sum(ord(k) for k in key)
@@ -308,8 +320,11 @@ class AviStegano():
         filedata = self.read_bits(32)
         filename = bytearray()
 
+        print('filedata',filedata)
+
         data = self.read_bits(64)
         result = bytearray()
+        print('data',data)
 
         for byte in range(filedata):
             filename.extend([self.read_bits(8)])
@@ -318,7 +333,9 @@ class AviStegano():
             result.extend([self.read_bits(8)])
 
         filepath = filename.decode()
+        print('filepath', filepath)
         original_filename = filepath.split('/')[-1]
+        print('original_filename', original_filename)
 
         if filename_message_output == '':
             video_path = self.aviVideo.filename.split('/')
@@ -326,7 +343,7 @@ class AviStegano():
         else:
             filename = filename_message_output + '.' + original_filename.split('.')[-1]
 
-        print(filename)
+        print('filename', filename)
 
         with open(filename, "wb") as f:
             f.write(result)
@@ -387,6 +404,13 @@ class AviStegano():
         self.horizontalLayout_5.addWidget(self.groupBox_3)
         self.verticalLayout_6.addWidget(self.widget)
         self.groupBox_2 = QtWidgets.QGroupBox(self.widget_3)
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox_2)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.bit_input_text = QtWidgets.QLineEdit(self.groupBox_2)
+        self.bit_input_text.setObjectName("bit_input_text")
+        self.verticalLayout.addWidget(self.bit_input_text)
+        self.verticalLayout_6.addWidget(self.groupBox_2)
         self.groupBox_4 = QtWidgets.QGroupBox(self.widget_3)
         self.groupBox_4.setObjectName("groupBox_4")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_4)
@@ -400,6 +424,9 @@ class AviStegano():
         self.retranslateUi()
 
         self.lineEdit.setMaxLength(25)
+        self.onlyInt = QtGui.QIntValidator(1, 7)
+        self.bit_input_text.setValidator(self.onlyInt)
+        self.bit_input_text.setMaxLength(1)
         self.checkBox.stateChanged.connect(self.enable_encryption)
         self.checkBox_3.stateChanged.connect(self.enable_randomized_frame)
         self.checkBox_2.stateChanged.connect(self.enable_randomized_pixel)
@@ -411,6 +438,7 @@ class AviStegano():
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.checkBox_3.setText(_translate("MainWindow", "Randomized Frame"))
         self.checkBox_2.setText(_translate("MainWindow", "Randomized Pixel"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "m-bit (0 < m < 8)"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
     def enable_encryption(self, state):

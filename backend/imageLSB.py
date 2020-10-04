@@ -127,9 +127,9 @@ class imageLSB():
         content = open(path, 'rb').read()
         data = len(content)
 
-        if ((not self.randomized) and ((self.width * self.height * self.channels) < ((8 - mbit) * (filedata + data + 96)))):
+        if ((not self.randomized) and ((self.width * self.height * self.channels) < round((8 * (filedata + data + 96)) / mbit))):
             return 'FAILED'
-        elif ((self.randomized) and ((self.width * self.height * self.channels) < ((8 - mbit) * (filedata + data + 128)))):
+        elif ((self.randomized) and ((self.width * self.height * self.channels) < round((8 * (filedata + data + 128)) / mbit))):
             return 'FAILED'
 
         if (self.encrypted):
