@@ -5,7 +5,7 @@ Aplikasi steganografi sederhana yang dibangun dengan menggunakan bahasa pemrogra
 ### Requirement:
 - python 3.*
 - pip / conda
-- (ffmpeg)[https://ffmpeg.org/download.html]
+- [ffmpeg](https://ffmpeg.org/download.html)
 
 ### Instalasi Environment
 ```
