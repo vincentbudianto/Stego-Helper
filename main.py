@@ -341,6 +341,7 @@ class Ui_MainWindow(object):
             #Reading Video File
             self.appendInfoText("Reading Video File")
             self.stego[1].readVideo(self.file_name)
+            self.stego[1].aviVideo.exportAudio(self.file_name)
 
             input_message_filename, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None,

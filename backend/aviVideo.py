@@ -76,15 +76,15 @@ class AviVideo():
             video.release()
             self.frames = frames
 
-            cmd = self.ffmpeg_cmd + ' -i ' + filename_input + ' -vn -acodec copy ' + filename_input + '_audio.wav'
-            print(cmd)
-            subprocess.call(cmd, shell=True)
-            # input_audio = ffmpeg.input(filename_input)
-            # self.audio = input_audio.audio()
 
         except Exception as exception:
             print(exception)
             print("Error while reading video file")
+
+    def exportAudio(self, filename_input):
+        cmd = self.ffmpeg_cmd + ' -i ' + filename_input + ' -vn -acodec copy ' + filename_input + '_audio.wav'
+        print(cmd)
+        subprocess.call(cmd, shell=True)
 
     def writeVideo(self, filename_output):
         temp_filename = filename_output.split('.')
