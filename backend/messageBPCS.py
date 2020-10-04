@@ -84,7 +84,7 @@ class messageBPCS():
                     if(bitplane[h][w] != bitplane[h + 1][w]):
                         count += 1
 
-                if (h != (self.block_size - 1)):
+                if (w != (self.block_size - 1)):
                     if(bitplane[h][w] != bitplane[h][w + 1]):
                         count += 1
 
