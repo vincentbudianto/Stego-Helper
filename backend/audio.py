@@ -9,7 +9,7 @@ from pathlib import Path
 import ntpath
 
 from main import Ui_MainWindow
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 def save_file(path, content):
     print(path)
@@ -25,6 +25,7 @@ class Audio():
         self.key = ""
         self.is_encrypted = False
         self.is_randomized = False
+        self.last_bit_count = 1
 
     def reset(self):
         self.mask_one = [1, 2, 4, 8, 16]
@@ -89,6 +90,14 @@ class Audio():
 
     def embedding(self, output_file_name=None):
         self.key = self.lineEdit.text()
+        last_bit_count = self.lastBitEdit.text()
+
+        if last_bit_count == '':
+            last_bit_count = 1
+        else:
+            last_bit_count = int(last_bit_count)
+            if (last_bit_count < 1) or (last_bit_count > 4):
+                last_bit_count = 1
 
         inputfilename_size = len(self.input_file_name)
         inputfile_size = len(self.input_file_bytes)
@@ -99,8 +108,8 @@ class Audio():
         filename = self.input_file_name
         content = self.input_file_bytes
 
-        # Limiting LSB into last 2 bits
-        if self.container_file_length < 8 * (144 + inputfilename_size + inputfile_size):
+        # Limiting LSB into last n bits
+        if self.container_file_length < round(8 * (144 + inputfilename_size + inputfile_size) / last_bit_count):
             return 'FAILED'
 
         if self.is_encrypted:
@@ -244,6 +253,14 @@ class Audio():
         self.verticalLayout_4.addWidget(self.checkBox_2)
         self.horizontalLayout_5.addWidget(self.groupBox_3)
         self.verticalLayout_6.addWidget(self.widget)
+        self.groupBox_5 = QtWidgets.QGroupBox(self.widget_3)
+        self.groupBox_5.setObjectName("groupBox_5")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.groupBox_5)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.lastBitEdit = QtWidgets.QLineEdit(self.groupBox_5)
+        self.lastBitEdit.setObjectName("lastBitEdit")
+        self.horizontalLayout_3.addWidget(self.lastBitEdit)
+        self.verticalLayout_6.addWidget(self.groupBox_5)
         self.groupBox_4 = QtWidgets.QGroupBox(self.widget_3)
         self.groupBox_4.setObjectName("groupBox_4")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_4)
@@ -259,6 +276,9 @@ class Audio():
         self.checkBox_2.stateChanged.connect(self.randomized_mode)
 
         self.lineEdit.setMaxLength(25)
+        self.lastBitEdit.setMaxLength(1)
+        self.only_int = QtGui.QIntValidator(1, 4)
+        self.lastBitEdit.setValidator(self.only_int)
         self.checkBox.stateChanged.connect(self.enable_encrypted)
         self.checkBox_2.stateChanged.connect(self.enable_randomized)
 
@@ -268,6 +288,7 @@ class Audio():
         self.checkBox.setText(_translate("MainWindow", "Enable"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.checkBox_2.setText(_translate("MainWindow", "Randomized"))
+        self.groupBox_5.setTitle(_translate("MainWindow", "m-bit (0 < m < 5)"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
     def encrypted_mode(self, state):
