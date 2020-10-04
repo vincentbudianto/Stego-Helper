@@ -23,8 +23,12 @@ class AviVideo():
 
         if sys.platform == "win32":
             self.ffmpeg_cmd = 'ffmpeg.exe'
+            self.rm_cmd = 'del'
+            self.rename_cmd = 'ren'
         else:
             self.ffmpeg_cmd = 'ffmpeg'
+            self.rm_cmd = 'rm'
+            self.rename_cmd = 'mv'
 
     def setFilename(self, filename):
         self.filename = filename
@@ -100,13 +104,21 @@ class AviVideo():
             video_output.write(frame)
         video_output.release()
 
-        cmd1 = self.ffmpeg_cmd + ' -i ' + filename + ' -i ' + self.filename + '_audio.wav -c:v copy -c:a aac ' + filename_output
-        print(cmd1)
-        subprocess.call(cmd1, shell=True)
+        try:
+            cmd1 = self.ffmpeg_cmd + ' -i ' + filename + ' -i ' + self.filename + '_audio.wav -c:v copy -c:a aac ' + filename_output
+            print(cmd1)
+            subprocess.check_call(cmd1, shell=True)
 
-        cmd2 = 'rm ' + self.filename + '_audio.wav ' + filename
-        print(cmd2)
-        subprocess.call(cmd2, shell=True)
+            cmd2 = self.rm_cmd + ' ' + self.filename + '_audio.wav ' + filename
+            print(cmd2)
+            subprocess.call(cmd2, shell=True)
+
+        except subprocess.CalledProcessError:
+            
+            cmd3 = self.rename_cmd + ' ' + filename + ' ' + filename_output
+            print(cmd3)
+            subprocess.call(cmd3, shell=True)
+
 
         return
 
