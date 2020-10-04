@@ -315,7 +315,7 @@ class Audio():
 
         original_bytes_int = []
         embedded_bytes_int = []
-        for i in range(1000, len(file_original_bytes)):
+        for i in range(0, len(file_original_bytes)):
             original_bytes_int.append(int(file_original_bytes[i]))
             embedded_bytes_int.append(int(file_embedded_bytes[i]))
 
