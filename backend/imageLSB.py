@@ -110,14 +110,26 @@ class imageLSB():
 
     def embed(self, path, output = None):
         key = self.key_input_text.text()
+        mbit = self.bit_input_text.text()
+
+        if (mbit == ''):
+            mbit = 7
+        else:
+            mbit = int(mbit)
+
+            if ((mbit > 7) or (mbit < 1)):
+                mbit = 7
+
+        print('mbit:', mbit)
+
         filename = path.split('/')[-1]
         filedata = len(filename)
         content = open(path, 'rb').read()
         data = len(content)
 
-        if ((not self.randomized) and ((self.width * self.height * self.channels) < (filedata + data + 96))):
+        if ((not self.randomized) and ((self.width * self.height * self.channels) < ((8 - mbit) * (filedata + data + 96)))):
             return 'FAILED'
-        elif ((self.randomized) and ((self.width * self.height * self.channels) < (filedata + data + 128))):
+        elif ((self.randomized) and ((self.width * self.height * self.channels) < ((8 - mbit) * (filedata + data + 128)))):
             return 'FAILED'
 
         if (self.encrypted):
@@ -255,6 +267,14 @@ class imageLSB():
         self.verticalLayout_4.addWidget(self.randomized_checkbox)
         self.horizontalLayout_5.addWidget(self.groupBox_3)
         self.verticalLayout_6.addWidget(self.widget)
+        self.groupBox_2 = QtWidgets.QGroupBox(self.image_lsb_widget)
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox_2)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.bit_input_text = QtWidgets.QLineEdit(self.groupBox_2)
+        self.bit_input_text.setObjectName("bit_input_text")
+        self.verticalLayout.addWidget(self.bit_input_text)
+        self.verticalLayout_6.addWidget(self.groupBox_2)
         self.groupBox_4 = QtWidgets.QGroupBox(self.image_lsb_widget)
         self.groupBox_4.setObjectName("groupBox_4")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_4)
@@ -268,6 +288,7 @@ class imageLSB():
         self.retranslateUi()
 
         self.key_input_text.setMaxLength(25)
+        self.bit_input_text.setMaxLength(1)
         self.encryption_checkbox.stateChanged.connect(self.enable_encrypted)
         self.randomized_checkbox.stateChanged.connect(self.enable_randomized)
 
@@ -277,6 +298,7 @@ class imageLSB():
         self.encryption_checkbox.setText(_translate("MainWindow", "Enable"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.randomized_checkbox.setText(_translate("MainWindow", "Randomized Pixel"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "m-bit (0 < m < 8)"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
     def enable_encrypted(self, state):

@@ -171,6 +171,9 @@ class imageBPCS():
         else:
             threshold = float(threshold)
 
+            if ((threshold > 1) or (threshold < 0)):
+                threshold = 0.3
+
         msg = messageBPCS(key = key, threshold = threshold, block_size = self.block_size)
         message = []
 
@@ -295,7 +298,7 @@ class imageBPCS():
         self.encryption_checkbox.setText(_translate("MainWindow", "Enable"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Random"))
         self.randomized_checkbox.setText(_translate("MainWindow", "Randomized Pixel"))
-        self.groupBox_2.setTitle(_translate("MainWindow", "Threshold (0.1 - 0.5)"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "Threshold (0 <= α <= 1)"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Key"))
 
     def enable_encrypted(self, state):
