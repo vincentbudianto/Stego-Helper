@@ -331,6 +331,37 @@ class Audio():
 
         psnr = 20 * math.log10(255 / math.sqrt(mse))
         return psnr
+    
+    @staticmethod
+    def audio_psnr_2(original_file, embedded_file):
+        file_original = wave.open(original_file, 'rb')
+        file_original_bytes = file_original.readframes(file_original.getnframes())
+        file_original.close()
+
+        file_embedded = wave.open(embedded_file, 'rb')
+        file_embedded_bytes = file_embedded.readframes(file_embedded.getnframes())
+        file_embedded.close()
+
+        original_bytes_int = []
+        embedded_bytes_int = []
+        total_bytes_original = 0
+        total_bytes_embedded = 0
+        for i in range(0, len(file_original_bytes)):
+            original_bytes_int.append(int(file_original_bytes[i]))
+            embedded_bytes_int.append(int(file_embedded_bytes[i]))
+            total_bytes_original += int(file_original_bytes[i])
+            total_bytes_embedded += int(file_embedded_bytes[i])
+        
+        p_zero = total_bytes_original / len(original_bytes_int)
+        p_one = total_bytes_embedded / len(embedded_bytes_int)
+
+        total = pow(p_one, 2) + pow(p_zero, 2) - 2 * p_one * p_zero
+        if total == 0:
+            total = 1
+
+        psnr = 10 * math.log10(pow(p_one, 2) / total)
+
+        return psnr
 
 
 if __name__ == "__main__":
